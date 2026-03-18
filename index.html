@@ -1,366 +1,395 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<meta charset="UTF-8">
-<title>ARCADE</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARCADE SOCIAL - FULL VERSION</title>
+    <style>
+        /* 초기 설정 */
+        :root {
+            --primary-hue: 260; /* 기본 보라색 HUE */
+            --primary: hsl(var(--primary-hue), 50%, 49%);
+            --bg: #f5f7f9;
+            --white: #ffffff;
+            --gray: #888;
+            --me-color: hsl(var(--primary-hue), 80%, 80%);
+            --you-color: #ffccbc; /* 주황빛 */
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
+        body { background: var(--bg); display: flex; justify-content: center; height: 100vh; }
+        
+        #app {
+            width: 100%; max-width: 450px; background: var(--white);
+            display: flex; flex-direction: column; position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1); overflow: hidden;
+        }
 
-<style>
-body{
-  margin:0;
-  background:#0f172a;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  font-family:-apple-system,BlinkMacSystemFont;
-}
+        /* --- Header --- */
+        header { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; z-index: 10; background: #fff;}
+        .logo { font-weight: 900; font-size: 1.2rem; letter-spacing: 1px; }
+        .play-btn { background: linear-gradient(to right, #5d3ebc, #8e7dff); color: white; border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; }
 
-.phone{
-  width:390px;
-  height:844px;
-  background:#fff;
-  border-radius:40px;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  box-shadow:0 30px 60px rgba(0,0,0,0.4);
-}
+        /* --- Content Area --- */
+        main { flex: 1; overflow-y: auto; padding-bottom: 75px; position: relative; }
+        .page { display: none; padding: 15px; height: 100%; overflow-y: auto; }
+        .page.active { display: block; }
 
-/* 상단 */
-header{
-  height:60px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 18px;
-  border-bottom:1px solid #eee;
-  font-weight:700;
-}
+        /* --- 공통 스타일 --- */
+        .profile-img { width: 40px; height: 40px; border-radius: 50%; background: #ddd; margin-right: 10px; object-fit: cover; border: 1px solid #eee; }
+        .badge { display: inline-block; width: 15px; height: 15px; background: #a3bffa; border-radius: 50%; color: white; text-align: center; font-size: 10px; line-height: 15px; margin-left: 3px; }
 
-.logo{
-  font-size:18px;
-}
+        /* --- 1. FEED --- */
+        .post { margin-bottom: 25px; border: 1px solid #eee; border-radius: 15px; overflow: hidden; background: #fff; padding: 15px;}
+        .post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .author-info { display: flex; align-items: center; cursor: pointer; }
+        .author-name-group b { display: block; font-size: 0.9rem;}
+        .author-name-group span { color: var(--gray); font-size: 0.75rem; }
+        .post-date { color: var(--gray); font-size: 0.75rem; }
+        .post-title { font-weight: bold; font-size: 1.1rem; margin: 10px 0; color: #111; }
+        .post-content { font-size: 0.9rem; color: #444; line-height: 1.5; }
+        .post-img { width: 100%; border-radius: 10px; margin-top: 15px; background: #f9f9f9; display: block;}
+        .post-actions { margin-top: 15px; display: flex; gap: 8px; border-top: 1px solid #eee; padding-top: 10px; }
+        .post-actions button { background: #f0f0f0; border: none; padding: 6px 12px; border-radius: 15px; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 4px;}
 
-.play{
-  font-size:13px;
-  background:#111;
-  color:#fff;
-  padding:6px 12px;
-  border-radius:20px;
-}
+        /* --- 2. EXPLORE --- */
+        .explore-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;}
+        .explore-tab { background: #eee; border: none; padding: 8px 15px; border-radius: 15px; font-size: 0.85rem; cursor: pointer; }
+        .explore-tab.active { background: #5d3ebc; color: white; }
+        .explore-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+        .grid-item { aspect-ratio: 1/1; background: #eee; border-radius: 5px; overflow: hidden; cursor: pointer; position: relative; }
+        .grid-item img { width: 100%; height: 100%; object-fit: cover; }
+        .grid-item .author-thumb { position: absolute; bottom: 5px; left: 5px; width: 25px; height: 25px; border-radius: 50%; border: 1px solid white; }
 
-/* 메인 */
-.container{
-  flex:1;
-  overflow:auto;
-  padding:12px;
-  background:#f9fafb;
-}
+        /* --- 3. AGENCY (USER) --- */
+        .user-card { display: flex; align-items: center; background: #fff; padding: 12px; border: 1px solid #eee; border-radius: 12px; margin-bottom: 10px; cursor: pointer; justify-content: space-between;}
+        .user-left { display: flex; align-items: center; }
+        .user-info b { display: block; font-size: 0.95rem; }
+        .user-info span { color: var(--gray); font-size: 0.8rem; }
+        .follow-btn { background: #f0f0f0; border: none; padding: 6px 12px; border-radius: 15px; font-size: 0.8rem; cursor: pointer; }
+        .follow-btn.following { background: linear-gradient(to right, #5d3ebc, #8e7dff); color: white; }
 
-/* 카드 */
-.card{
-  background:#fff;
-  border-radius:18px;
-  padding:14px;
-  margin-bottom:12px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.05);
-}
+        /* --- 4. DM --- */
+        #page-dm { display: flex; flex-direction: column; padding: 0; }
+        .chat-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+        
+        .date-divider { text-align: center; margin: 20px 0; position: relative; }
+        .date-divider::before { content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 1px; background: #eee; z-index: 1; }
+        .date-divider span { background: #fff; padding: 0 10px; position: relative; z-index: 2; color: var(--gray); font-size: 0.75rem; font-weight: bold; }
 
-/* 유저 */
-.user{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
+        .msg { max-width: 75%; display: flex; align-items: flex-start; gap: 8px; position: relative;}
+        .msg.me { align-self: flex-end; flex-direction: row-reverse; }
+        .msg.you { align-self: flex-start; }
+        
+        .msg-bubble-group { display: flex; flex-direction: column; }
+        .msg-bubble { padding: 10px 15px; border-radius: 18px; font-size: 0.9rem; line-height: 1.4; position: relative; }
+        .msg.me .msg-bubble { background: var(--me-color); border-bottom-right-radius: 2px; color: #111; }
+        .msg.you .msg-bubble { background: var(--you-color); border-bottom-left-radius: 2px; color: #111; }
+        
+        .msg-info { font-size: 0.65rem; color: var(--gray); margin-top: 2px;}
+        .msg.me .msg-info { text-align: right; }
 
-.avatar{
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  background:#ddd;
-  background-size:cover;
-}
+        .msg-react { position: absolute; bottom: -8px; left: -10px; background: white; border: 1px solid #eee; border-radius: 10px; padding: 2px 5px; font-size: 0.65rem; cursor: pointer; z-index: 1; opacity: 0; transition: opacity 0.2s;}
+        .msg.you:hover .msg-react { opacity: 1; }
+        .msg-react.active { opacity: 1; color: red; }
 
-/* 버튼 */
-button{
-  border:none;
-  background:#111;
-  color:#fff;
-  padding:8px;
-  border-radius:10px;
-  width:100%;
-  margin-top:6px;
-}
+        .chat-input-bar { padding: 10px 15px; border-top: 1px solid #eee; background: white; display: flex; gap: 8px; align-items: center; }
+        .chat-input-bar input { flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ddd; font-size: 0.9rem; }
+        .chat-input-bar button { padding: 8px 15px; border-radius: 20px; background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
 
-/* 입력 */
-input,textarea{
-  width:100%;
-  padding:8px;
-  border-radius:10px;
-  border:1px solid #ddd;
-  margin-top:6px;
-}
+        /* --- 5. SETTING --- */
+        .setting-item { margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #eee;}
+        .setting-item label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 0.9rem;}
+        .setting-item input[type="text"], .setting-item textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 0.9rem; }
+        .setting-item textarea { height: 80px; resize: none; }
+        .color-preview { width: 100%; height: 40px; border-radius: 20px; background: var(--me-color); margin-top: 10px; border: 1px solid #eee; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #111;}
 
-/* 하단 */
-.bottom{
-  height:65px;
-  border-top:1px solid #eee;
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
-  background:#fff;
-  font-size:13px;
-}
+        /* --- Navigation --- */
+        nav {
+            position: absolute; bottom: 0; width: 100%; height: 70px;
+            background: white; border-top: 1px solid #eee;
+            display: flex; justify-content: space-around; align-items: center; z-index: 10;
+        }
+        nav button { background: none; border: none; color: var(--gray); cursor: pointer; font-size: 0.75rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px;}
+        nav button.active { color: var(--primary); font-weight: bold; }
+        nav .nav-icon { font-size: 1.3rem; }
 
-/* 채팅 */
-.chat{display:flex;flex-direction:column;gap:10px;}
-
-.msg{display:flex;gap:8px;}
-.me{justify-content:flex-end;}
-
-.bubble{
-  max-width:65%;
-  padding:10px;
-  border-radius:18px;
-  background:#eee;
-}
-
-.me .bubble{
-  background:#111;
-  color:#fff;
-}
-
-/* grid */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:6px;
-}
-.grid img{
-  width:100%;
-  aspect-ratio:1;
-  object-fit:cover;
-  border-radius:10px;
-}
-</style>
+        /* Floating Button */
+        .write-btn { position: absolute; bottom: 85px; right: 20px; width: 55px; height: 55px; border-radius: 50%; background: var(--primary); color: white; border: none; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 5;}
+    </style>
 </head>
-
 <body>
 
-<div class="phone">
+<div id="app">
+    <header>
+        <div class="logo">ARCADE</div>
+        <button class="play-btn" onclick="login()">PLAY ✦</button>
+    </header>
 
-<header>
-  <div class="logo">ARCADE</div>
-  <div class="play" onclick="login()">PLAY</div>
-</header>
+    <main>
+        <section id="page-feed" class="page active">
+            <div id="feed-list"></div>
+        </section>
 
-<div class="container" id="app"></div>
+        <section id="page-explore" class="page">
+            <div class="explore-header">
+                <button class="explore-tab active">Explore</button>
+                <div style="color: var(--gray); cursor: pointer;" onclick="renderExplore()">🔄</div>
+            </div>
+            <div class="explore-grid" id="explore-list"></div>
+        </section>
 
-<div class="bottom">
-  <div onclick="feed()">Feed</div>
-  <div onclick="explore()">Explore</div>
-  <div onclick="users()">User</div>
-  <div onclick="dmList()">DM</div>
-  <div onclick="setting()">Set</div>
-</div>
+        <section id="page-agency" class="page">
+            <div id="user-list"></div>
+        </section>
 
+        <section id="page-dm" class="page">
+            <div class="chat-box" id="chat-box"></div>
+            <div class="chat-input-bar">
+                <input type="text" id="chat-input" placeholder="메시지 입력..." onkeypress="if(event.keyCode==13) sendMsg()">
+                <button onclick="sendMsg()">send</button>
+            </div>
+        </section>
+
+        <section id="page-setting" class="page">
+            <div class="setting-item">
+                <label>내 이름</label>
+                <input type="text" id="set-name" oninput="saveProfile()">
+            </div>
+            <div class="setting-item">
+                <label>상태 메시지</label>
+                <textarea id="set-status" oninput="saveProfile()" placeholder="상태 메시지를 입력하세요..."></textarea>
+            </div>
+            <div class="setting-item">
+                <label>채팅 색상 (Me)</label>
+                <input type="range" id="set-hue" min="0" max="360" step="1" oninput="saveProfile()">
+                <div class="color-preview" id="color-preview">Me 말풍선 색상</div>
+            </div>
+        </section>
+    </main>
+
+    <button class="write-btn" id="write-btn" onclick="createPost()">+</button>
+
+    <nav>
+        <button onclick="showPage('feed')" id="nav-feed" class="active"><span class="nav-icon">🏛️</span>Feed</button>
+        <button onclick="showPage('explore')" id="nav-explore"><span class="nav-icon">✨</span>Explore</button>
+        <button onclick="showPage('agency')" id="nav-agency"><span class="nav-icon">🪐</span>Agency</button>
+        <button onclick="showPage('dm')" id="nav-dm"><span class="nav-icon">💬</span>DM</button>
+        <button onclick="showPage('setting')" id="nav-setting"><span class="nav-icon">⚙️</span>Setting</button>
+    </nav>
 </div>
 
 <script>
-let user=null;
-let usersData=JSON.parse(localStorage.getItem("users"))||[];
-let posts=JSON.parse(localStorage.getItem("posts"))||[];
-let chats=JSON.parse(localStorage.getItem("chats"))||{};
-let currentChat=null;
+    // --- 유틸리티 ---
+    function getToday() { return new Date().toISOString().split('T')[0].replace(/-/g, '.'); }
+    function getTime() { return new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false }); }
 
-function save(){
-localStorage.setItem("users",JSON.stringify(usersData));
-localStorage.setItem("posts",JSON.stringify(posts));
-localStorage.setItem("chats",JSON.stringify(chats));
-}
+    // --- 데이터 관리 ---
+    const usersData = {
+        'ARCADE': { name: 'ARCADE', id: '@arcade.buzy', img: 'https://i.pravatar.cc/150?u=arcade' },
+        '감기걸린 림': { name: '감기걸린 림', id: '@cold_lim', img: 'https://i.pravatar.cc/150?u=lim' },
+        'NANA': { name: 'NANA', id: '@nana.ko', img: 'https://i.pravatar.cc/150?u=nana' },
+        'HARI': { name: 'HARI', id: '@hari_day', img: 'https://i.pravatar.cc/150?u=hari' }
+    };
 
-function toBase64(file,cb){
-let r=new FileReader();
-r.onload=()=>cb(r.result);
-r.readAsDataURL(file);
-}
+    let currentUser = JSON.parse(localStorage.getItem('arcade_user')) || {
+        ...usersData['ARCADE'], status: '반갑습니다!', hue: 260, following: []
+    };
 
-/* 로그인 */
-function login(){
-app.innerHTML=`
-<div class="card">
-<h3>계정 선택</h3>
-${usersData.map((u,i)=>`
-<div class="user" onclick="selectUser(${i})">
-<div class="avatar" style="background-image:url('${u.avatar||''}')"></div>
-<div>${u.name}</div>
-</div>`).join("")}
-<button onclick="addUserUI()">+ 계정 추가</button>
-</div>`;
-}
+    let posts = JSON.parse(localStorage.getItem('arcade_posts')) || [
+        { id: 1, author: 'NANA', date: '2026.03.17', title: '오늘의 날씨', content: '모두 따뜻한 하루 보내요🍷', img: 'https://picsum.photos/400/300?u=1' },
+        { id: 2, author: 'HARI', date: '2026.03.16', title: '새로운 작업물', content: '디자인 마음에 드네요.', img: 'https://picsum.photos/400/300?u=2' }
+    ];
 
-function selectUser(i){
-user=usersData[i];
-feed();
-}
+    let chats = JSON.parse(localStorage.getItem('arcade_chats')) || [
+        { type: 'date', value: '2026.02.17' },
+        { type: 'you', author: '감기걸린 림', text: '단체 방 일짱을 하겠어요', time: '18:46' },
+        { type: 'you', author: '감기걸린 림', text: '내가 짱 할래', time: '18:48' },
+        { type: 'date', value: '2026.03.02' },
+        { type: 'me', author: 'ARCADE', text: '그래 네가 짱 해라!', time: '10:15' }
+    ];
 
-function addUserUI(){
-app.innerHTML=`
-<div class="card">
-이름<input id="n">
-아이디<input id="i">
-프사<input type="file" id="a">
-<button onclick="addUser()">생성</button>
-</div>`;
-}
+    // --- 페이지 전환 ---
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById('page-' + pageId).classList.add('active');
+        document.getElementById('nav-' + pageId).classList.add('active');
+        
+        // 글쓰기 버튼 노출 여부
+        document.getElementById('write-btn').style.display = (pageId === 'feed') ? 'block' : 'none';
 
-function addUser(){
-let f=a.files[0];
-function go(img){
-let u={name:n.value,id:i.value,avatar:img||"",msg:"",color:"#111"};
-usersData.push(u);
-user=u;
-save();
-feed();
-}
-if(f)toBase64(f,(d)=>go(d)); else go();
-}
+        renderAll();
+    }
 
-/* 피드 */
-function feed(){
-if(!user)return login();
+    // --- 핵심 기능 함수 ---
+    function login() {
+        const id = prompt("ID (ARCADE)");
+        const pw = prompt("PW (01024773752)");
+        if(id === 'ARCADE' && pw === '01024773752') { alert("로그인 성공!"); } else { alert("정보가 틀렸습니다."); }
+    }
 
-let html=`
-<div class="card">
-<input id="t" placeholder="제목">
-<textarea id="c"></textarea>
-<input type="file" id="img">
-<button onclick="addPost()">업로드</button>
-</div>`;
+    function createPost() {
+        const title = prompt("제목");
+        const content = prompt("내용");
+        if(!title || !content) return;
+        
+        posts.unshift({
+            id: Date.now(), author: currentUser.name, date: getToday(), title: title, content: content, img: 'https://picsum.photos/400/300?random=' + Math.random()
+        });
+        localStorage.setItem('arcade_posts', JSON.stringify(posts));
+        renderAll();
+    }
 
-posts.forEach((p,i)=>{
-html+=`
-<div class="card">
-<div class="user">
-<div class="avatar" style="background-image:url('${p.avatar||''}')"></div>
-<b>${p.user}</b>
-</div>
-<p>${p.content}</p>
-${p.img?`<img src="${p.img}" style="width:100%;border-radius:12px;">`:''}
-<button onclick="comment(${i})">댓글</button>
-</div>`;
-});
+    function sendMsg() {
+        const input = document.getElementById('chat-input');
+        if(!input.value) return;
+        
+        // 날짜 구분선 필요 체크
+        const todayStr = getToday();
+        const lastChat = chats[chats.length - 1];
+        if(!lastChat || (lastChat.type === 'date' && lastChat.value !== todayStr) || (lastChat.type !== 'date' && lastChat.date !== todayStr && chats.filter(c => c.type === 'date' && c.value === todayStr).length === 0)) {
+            // 간단하게, 마지막 메시지가 오늘 날짜가 아니면 추가 (날짜 구분선 로직은 복잡하므로 간단히 구현)
+            // chats.push({ type: 'date', value: todayStr });
+        }
 
-app.innerHTML=html;
-}
+        chats.push({ type: 'me', author: currentUser.name, text: input.value, time: getTime(), date: getToday() });
+        localStorage.setItem('arcade_chats', JSON.stringify(chats));
+        input.value = '';
+        renderChat();
+    }
 
-function addPost(){
-let f=img.files[0];
-function go(imgData){
-posts.unshift({
-user:user.name,
-avatar:user.avatar,
-content:c.value,
-img:imgData||"",
-comments:[]
-});
-save();
-feed();
-}
-if(f)toBase64(f,(d)=>go(d)); else go();
-}
+    function toggleFollow(userName) {
+        const idx = currentUser.following.indexOf(userName);
+        if(idx > -1) { currentUser.following.splice(idx, 1); } else { currentUser.following.push(userName); }
+        localStorage.setItem('arcade_user', JSON.stringify(currentUser));
+        renderUsers();
+    }
 
-function comment(i){
-let t=prompt("댓글");
-posts[i].comments.push({text:t});
-save();
-feed();
-}
+    function saveProfile() {
+        currentUser.name = document.getElementById('set-name').value;
+        currentUser.status = document.getElementById('set-status').value;
+        currentUser.hue = document.getElementById('set-hue').value;
+        
+        localStorage.setItem('arcade_user', JSON.stringify(currentUser));
+        applyTheme();
+    }
 
-/* explore */
-function explore(){
-app.innerHTML=`
-<div class="grid">
-${posts.map(p=>p.img?`<img src="${p.img}">`:"").join("")}
-</div>`;
-}
+    function applyTheme() {
+        document.documentElement.style.setProperty('--primary-hue', currentUser.hue);
+        document.getElementById('color-preview').style.background = `hsl(${currentUser.hue}, 80%, 80%)`;
+    }
 
-/* users */
-function users(){
-app.innerHTML=usersData.map(u=>`
-<div class="card user">
-<div class="avatar" style="background-image:url('${u.avatar||''}')"></div>
-<b>${u.name}</b>
-</div>`).join("");
-}
+    // --- 렌더링 시스템 ---
+    function renderAll() {
+        applyTheme();
+        renderFeed();
+        renderExplore();
+        renderUsers();
+        renderChat();
+        
+        // 세팅 데이터 적용
+        document.getElementById('set-name').value = currentUser.name;
+        document.getElementById('set-status').value = currentUser.status;
+        document.getElementById('set-hue').value = currentUser.hue;
+    }
 
-/* DM */
-function dmList(){
-let html=`<div class="card" onclick="createChat()">➕ 채팅</div>`;
-Object.keys(chats).forEach(n=>{
-html+=`<div class="card" onclick="openChat('${n}')">${n}</div>`;
-});
-app.innerHTML=html;
-}
+    function renderFeed() {
+        const list = document.getElementById('feed-list');
+        list.innerHTML = posts.map(p => {
+            const author = usersData[p.author] || usersData['ARCADE']; // 데이터 없으면 기본값
+            return `
+            <div class="post">
+                <div class="post-header">
+                    <div class="author-info">
+                        <img src="${author.img}" class="profile-img">
+                        <div class="author-name-group">
+                            <b>${author.name} <span class="badge">V</span></b>
+                            <span>${author.id}</span>
+                        </div>
+                    </div>
+                    <div class="post-date">${p.date}</div>
+                </div>
+                <div class="post-title">${p.title}</div>
+                <div class="post-content">${p.content}</div>
+                ${p.img ? `<img src="${p.img}" class="post-img">` : ''}
+                <div class="post-actions">
+                    <button>💬 댓글</button>
+                    <button>🔗 공유</button>
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
 
-function createChat(){
-app.innerHTML=usersData.map(u=>`
-<div class="card user" onclick="startChat('${u.name}')">
-<div class="avatar" style="background-image:url('${u.avatar||''}')"></div>
-${u.name}
-</div>`).join("");
-}
+    function renderExplore() {
+        const list = document.getElementById('explore-list');
+        // 피드 이미지들을 셔플해서 띄우기 (간단히)
+        const shuffledPosts = [...posts].sort(() => 0.5 - Math.random());
+        list.innerHTML = shuffledPosts.map(p => {
+            const author = usersData[p.author] || usersData['ARCADE'];
+            return `
+            <div class="grid-item">
+                <img src="${p.img || 'https://via.placeholder.com/150'}" loading="lazy">
+                <img src="${author.img}" class="author-thumb">
+            </div>
+            `;
+        }).join('');
+    }
 
-function startChat(n){
-if(!chats[n])chats[n]=[];
-openChat(n);
-}
+    function renderUsers() {
+        const list = document.getElementById('user-list');
+        list.innerHTML = Object.keys(usersData).filter(key => key !== 'ARCADE').map(key => {
+            const u = usersData[key];
+            const isFollowing = currentUser.following.includes(u.name);
+            return `
+            <div class="user-card">
+                <div class="user-left">
+                    <img src="${u.img}" class="profile-img">
+                    <div class="user-info">
+                        <b>${u.name} <span class="badge">V</span></b>
+                        <span>${u.id}</span>
+                    </div>
+                </div>
+                <button class="follow-btn ${isFollowing ? 'following' : ''}" onclick="toggleFollow('${u.name}')">
+                    ${isFollowing ? '팔로잉' : '팔로우'}
+                </button>
+            </div>
+            `;
+        }).join('');
+    }
 
-function openChat(n){
-currentChat=n;
-let html=`<div class="chat">`;
+    function renderChat() {
+        const box = document.getElementById('chat-box');
+        box.innerHTML = chats.map((c, index) => {
+            if(c.type === 'date') {
+                return `<div class="date-divider"><span>${c.value}</span></div>`;
+            }
+            
+            const isMe = c.type === 'me';
+            const author = usersData[c.author] || usersData['ARCADE'];
 
-(chats[n]||[]).forEach(c=>{
-html+=`
-<div class="msg ${c.me?'me':''}">
-<div class="bubble">${c.text||''}</div>
-</div>`;
-});
+            // 연속된 메시지 프사 생략 로직 (간단히 구현)
+            const showProfile = !isMe && (index === 0 || chats[index-1].author !== c.author || chats[index-1].type === 'date');
 
-html+=`
-<input id="m">
-<button onclick="send()">send</button>
-</div>`;
+            return `
+            <div class="msg ${isMe ? 'me' : 'you'}">
+                ${showProfile ? `<img src="${author.img}" class="profile-img">` : (isMe ? '' : '<div style="width:48px;"></div>')}
+                <div class="msg-bubble-group">
+                    ${showProfile ? `<small style="font-size:0.7rem; color:var(--gray); margin-bottom:2px;">${author.name}</small>` : ''}
+                    <div class="msg-bubble">
+                        ${c.text}
+                        ${!isMe ? `<div class="msg-react" onclick="this.classList.toggle('active')">❤️</div>` : ''}
+                    </div>
+                    <div class="msg-info">${c.time}</div>
+                </div>
+            </div>
+            `;
+        }).join('');
+        box.scrollTop = box.scrollHeight;
+    }
 
-app.innerHTML=html;
-}
-
-function send(){
-chats[currentChat].push({text:m.value,me:true});
-save();
-openChat(currentChat);
-}
-
-/* 설정 */
-function setting(){
-if(!user)return;
-
-app.innerHTML=`
-<div class="card">
-이름<input id="n" value="${user.name}">
-상태<input id="s" value="${user.msg}">
-<button onclick="saveUser()">저장</button>
-</div>`;
-}
-
-function saveUser(){
-user.name=n.value;
-user.msg=s.value;
-save();
-alert("저장됨");
-}
-
-feed();
+    // 초기 실행
+    showPage('feed');
 </script>
 
 </body>
