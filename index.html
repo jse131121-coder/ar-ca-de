@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ARCADE</title>
+
+<style>
+body {
+  margin:0;
+  font-family:sans-serif;
+  background:linear-gradient(135deg,#f3f3f3,#dfe9f3);
+}
+
+header {
+  display:flex;
+  justify-content:space-between;
+  padding:20px;
+  font-weight:bold;
+}
+
+.play {
+  background:linear-gradient(135deg,#6a5acd,#8fd3f4);
+  color:white;
+  padding:10px 20px;
+  border-radius:12px;
+  cursor:pointer;
+}
+
+.container {
+  padding:15px;
+}
+
+.card {
+  background:white;
+  border-radius:20px;
+  padding:15px;
+  margin-bottom:10px;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.grid div {
+  aspect-ratio:1;
+  background:#ddd;
+  border-radius:15px;
+  display:flex;
+  align-items:end;
+  padding:5px;
+}
+
+.bottom {
+  position:fixed;
+  bottom:0;
+  width:100%;
+  display:flex;
+  justify-content:space-around;
+  background:white;
+  padding:10px;
+}
+
+.chat { display:flex; flex-direction:column; gap:10px; }
+.me { align-self:flex-end; background:#ffd1dc; padding:10px; border-radius:15px;}
+.other { align-self:flex-start; background:#cce5ff; padding:10px; border-radius:15px;}
+
+input, textarea {
+  width:100%;
+  padding:8px;
+  margin-top:5px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  ARCADE
+  <div class="play" onclick="login()">PLAY</div>
+</header>
+
+<div class="container" id="app"></div>
+
+<div class="bottom">
+  <div onclick="feed()">Feed</div>
+  <div onclick="explore()">Explore</div>
+  <div onclick="users()">User</div>
+  <div onclick="dm()">DM</div>
+  <div onclick="setting()">Setting</div>
+</div>
+
+<script>
+let currentUser = JSON.parse(localStorage.getItem("user")) || null;
+let posts = JSON.parse(localStorage.getItem("posts")) || [];
+let chats = JSON.parse(localStorage.getItem("chats")) || [];
+
+function save(){
+  localStorage.setItem("posts", JSON.stringify(posts));
+  localStorage.setItem("chats", JSON.stringify(chats));
+}
+
+function login(){
+  let id = prompt("ID");
+  let pw = prompt("PW");
+
+  if(id==="ARCADE" && pw==="01024773752"){
+    currentUser = {name:"ARCADE", color:"#ffd1dc"};
+    localStorage.setItem("user", JSON.stringify(currentUser));
+    alert("로그인 성공");
+    feed();
+  } else {
+    alert("실패");
+  }
+}
+
+function feed(){
+  let html = `
+    <div class="card">
+      <input id="title" placeholder="제목">
+      <textarea id="content" placeholder="내용"></textarea>
+      <button onclick="addPost()">업로드</button>
+    </div>
+  `;
+
+  posts.forEach((p,i)=>{
+    html += `
+      <div class="card">
+        <b>${p.title}</b>
+        <p>${p.content}</p>
+        <button onclick="delPost(${i})">삭제</button>
+      </div>
+    `;
+  });
+
+  app.innerHTML = html;
+}
+
+function addPost(){
+  let t = document.getElementById("title").value;
+  let c = document.getElementById("content").value;
+
+  posts.unshift({title:t, content:c});
+  save();
+  feed();
+}
+
+function delPost(i){
+  posts.splice(i,1);
+  save();
+  feed();
+}
+
+function explore(){
+  app.innerHTML = `
+    <div class="grid">
+      ${posts.map(p=>`<div>${p.title}</div>`).join("")}
+    </div>
+  `;
+}
+
+function users(){
+  app.innerHTML = `
+    <div class="card">
+      <b>${currentUser?.name || "Guest"}</b><br>
+      <span style="color:gray">@user</span>
+    </div>
+  `;
+}
+
+function dm(){
+  let html = `<div class="chat">`;
+
+  chats.forEach(c=>{
+    html += `<div class="${c.me?'me':'other'}">${c.text}</div>`;
+  });
+
+  html += `
+    <input id="msg">
+    <button onclick="send()">send</button>
+  </div>`;
+
+  app.innerHTML = html;
+}
+
+function send(){
+  let m = document.getElementById("msg").value;
+  chats.push({text:m, me:true});
+  save();
+  dm();
+}
+
+function setting(){
+  app.innerHTML = `
+    <div class="card">
+      이름 <input id="name" value="${currentUser?.name||''}">
+      <br><br>
+      색상 <input id="color" value="${currentUser?.color||'#ffd1dc'}">
+      <button onclick="saveUser()">저장</button>
+    </div>
+  `;
+}
+
+function saveUser(){
+  currentUser.name = document.getElementById("name").value;
+  currentUser.color = document.getElementById("color").value;
+  localStorage.setItem("user", JSON.stringify(currentUser));
+  alert("저장됨");
+}
+
+feed();
+</script>
+
+</body>
+</html>
