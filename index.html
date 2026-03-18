@@ -7,113 +7,141 @@
 <style>
 body{
   margin:0;
-  background:#cfd9e6;
+  background:#0f172a;
   display:flex;
   justify-content:center;
   align-items:center;
   height:100vh;
-  font-family:-apple-system,sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont;
 }
 
 .phone{
   width:390px;
   height:844px;
+  background:#fff;
   border-radius:40px;
-  background:linear-gradient(145deg,#eef2f7,#d9e3ef);
-  box-shadow:20px 20px 40px rgba(0,0,0,0.15),
-             -10px -10px 30px rgba(255,255,255,0.7);
   overflow:hidden;
   display:flex;
   flex-direction:column;
+  box-shadow:0 30px 60px rgba(0,0,0,0.4);
 }
 
+/* 상단 */
 header{
-  padding:18px;
-  font-weight:700;
+  height:60px;
   display:flex;
+  align-items:center;
   justify-content:space-between;
+  padding:0 18px;
+  border-bottom:1px solid #eee;
+  font-weight:700;
+}
+
+.logo{
+  font-size:18px;
 }
 
 .play{
-  background:linear-gradient(135deg,#7b61ff,#5fd0ff);
-  color:white;
-  padding:8px 16px;
+  font-size:13px;
+  background:#111;
+  color:#fff;
+  padding:6px 12px;
   border-radius:20px;
 }
 
+/* 메인 */
 .container{
   flex:1;
   overflow:auto;
-  padding:10px;
+  padding:12px;
+  background:#f9fafb;
 }
 
+/* 카드 */
 .card{
-  background:rgba(255,255,255,0.6);
-  backdrop-filter:blur(10px);
-  border-radius:20px;
+  background:#fff;
+  border-radius:18px;
   padding:14px;
   margin-bottom:12px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+  box-shadow:0 4px 12px rgba(0,0,0,0.05);
 }
 
+/* 유저 */
 .user{
   display:flex;
-  gap:10px;
   align-items:center;
+  gap:10px;
 }
 
 .avatar{
-  width:42px;height:42px;
+  width:40px;
+  height:40px;
   border-radius:50%;
   background:#ddd;
   background-size:cover;
 }
 
+/* 버튼 */
+button{
+  border:none;
+  background:#111;
+  color:#fff;
+  padding:8px;
+  border-radius:10px;
+  width:100%;
+  margin-top:6px;
+}
+
+/* 입력 */
+input,textarea{
+  width:100%;
+  padding:8px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  margin-top:6px;
+}
+
+/* 하단 */
 .bottom{
-  height:70px;
+  height:65px;
+  border-top:1px solid #eee;
   display:flex;
   justify-content:space-around;
   align-items:center;
-  background:rgba(255,255,255,0.7);
-  backdrop-filter:blur(10px);
+  background:#fff;
+  font-size:13px;
 }
 
+/* 채팅 */
 .chat{display:flex;flex-direction:column;gap:10px;}
+
 .msg{display:flex;gap:8px;}
 .me{justify-content:flex-end;}
 
 .bubble{
-  padding:10px;
-  border-radius:15px;
   max-width:65%;
+  padding:10px;
+  border-radius:18px;
+  background:#eee;
 }
 
-.reply{
-  margin-left:20px;
-  border-left:2px solid #ccc;
-  padding-left:10px;
+.me .bubble{
+  background:#111;
+  color:#fff;
 }
 
+/* grid */
 .grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:8px;
+  gap:6px;
 }
-
-.grid div{
-  aspect-ratio:1;
-  border-radius:15px;
-  overflow:hidden;
-}
-
 .grid img{
   width:100%;
-  height:100%;
+  aspect-ratio:1;
   object-fit:cover;
+  border-radius:10px;
 }
-
-input,textarea{width:100%;padding:6px;margin-top:5px;}
-button{margin-top:5px;}
 </style>
 </head>
 
@@ -122,7 +150,7 @@ button{margin-top:5px;}
 <div class="phone">
 
 <header>
-  ARCADE
+  <div class="logo">ARCADE</div>
   <div class="play" onclick="login()">PLAY</div>
 </header>
 
@@ -139,259 +167,197 @@ button{margin-top:5px;}
 </div>
 
 <script>
-let user = JSON.parse(localStorage.getItem("user")) || null;
-let usersData = JSON.parse(localStorage.getItem("users")) || [];
-let posts = JSON.parse(localStorage.getItem("posts")) || [];
-let chats = JSON.parse(localStorage.getItem("chats")) || {};
+let user=null;
+let usersData=JSON.parse(localStorage.getItem("users"))||[];
+let posts=JSON.parse(localStorage.getItem("posts"))||[];
+let chats=JSON.parse(localStorage.getItem("chats"))||{};
 let currentChat=null;
 
 function save(){
-  localStorage.setItem("user",JSON.stringify(user));
-  localStorage.setItem("users",JSON.stringify(usersData));
-  localStorage.setItem("posts",JSON.stringify(posts));
-  localStorage.setItem("chats",JSON.stringify(chats));
+localStorage.setItem("users",JSON.stringify(usersData));
+localStorage.setItem("posts",JSON.stringify(posts));
+localStorage.setItem("chats",JSON.stringify(chats));
 }
 
 function toBase64(file,cb){
-  const r=new FileReader();
-  r.onload=()=>cb(r.result);
-  r.readAsDataURL(file);
+let r=new FileReader();
+r.onload=()=>cb(r.result);
+r.readAsDataURL(file);
 }
 
 /* 로그인 */
 function login(){
-  let html=`
-  <div class="card">
-  <h3>계정 선택</h3>
-  ${usersData.map((u,i)=>`
-    <div class="user" onclick="selectUser(${i})">
-      <div class="avatar" style="background-image:url('${u.avatar||''}')"></div>
-      <div><b>${u.name}</b><br>${u.id}</div>
-    </div>`).join("")}
-  <button onclick="showAddUser()">+ 계정 추가</button>
-  </div>`;
-  app.innerHTML=html;
+app.innerHTML=`
+<div class="card">
+<h3>계정 선택</h3>
+${usersData.map((u,i)=>`
+<div class="user" onclick="selectUser(${i})">
+<div class="avatar" style="background-image:url('${u.avatar||''}')"></div>
+<div>${u.name}</div>
+</div>`).join("")}
+<button onclick="addUserUI()">+ 계정 추가</button>
+</div>`;
 }
 
 function selectUser(i){
-  user=usersData[i]; save(); feed();
+user=usersData[i];
+feed();
 }
 
-function showAddUser(){
-  app.innerHTML=`
-  <div class="card">
-    이름<input id="n">
-    아이디<input id="i">
-    프사<input type="file" id="a">
-    <button onclick="addUser()">생성</button>
-  </div>`;
+function addUserUI(){
+app.innerHTML=`
+<div class="card">
+이름<input id="n">
+아이디<input id="i">
+프사<input type="file" id="a">
+<button onclick="addUser()">생성</button>
+</div>`;
 }
 
 function addUser(){
-  let f=a.files[0];
-  function create(img){
-    let u={name:n.value,id:i.value,avatar:img||"",color:"#ffd1dc",msg:""};
-    usersData.push(u); user=u; save(); feed();
-  }
-  if(f) toBase64(f,(d)=>create(d)); else create("");
+let f=a.files[0];
+function go(img){
+let u={name:n.value,id:i.value,avatar:img||"",msg:"",color:"#111"};
+usersData.push(u);
+user=u;
+save();
+feed();
+}
+if(f)toBase64(f,(d)=>go(d)); else go();
 }
 
-/* FEED */
+/* 피드 */
 function feed(){
-  let html=`
-  <div class="card">
-    <input id="t" placeholder="제목">
-    <textarea id="c"></textarea>
-    <input type="file" id="img">
-    <button onclick="addPost()">업로드</button>
-  </div>`;
+if(!user)return login();
 
-  posts.forEach((p,i)=>{
-    html+=`
-    <div class="card">
-      <div class="user" onclick="profile('${p.user}')">
-        <div class="avatar" style="background-image:url('${p.avatar||''}')"></div>
-        <b>${p.user}</b>
-      </div>
-      <b>${p.title}</b>
-      <p>${p.content}</p>
-      ${p.img?`<img src="${p.img}" style="width:100%;border-radius:15px;">`:''}
+let html=`
+<div class="card">
+<input id="t" placeholder="제목">
+<textarea id="c"></textarea>
+<input type="file" id="img">
+<button onclick="addPost()">업로드</button>
+</div>`;
 
-      <button onclick="addComment(${i})">댓글</button>
+posts.forEach((p,i)=>{
+html+=`
+<div class="card">
+<div class="user">
+<div class="avatar" style="background-image:url('${p.avatar||''}')"></div>
+<b>${p.user}</b>
+</div>
+<p>${p.content}</p>
+${p.img?`<img src="${p.img}" style="width:100%;border-radius:12px;">`:''}
+<button onclick="comment(${i})">댓글</button>
+</div>`;
+});
 
-      ${(p.comments||[]).map((c,ci)=>`
-        <div>
-          💬 ${c.text}
-          <button onclick="addReply(${i},${ci})">↩</button>
-          ${(c.replies||[]).map(r=>`<div class="reply">↳ ${r}</div>`).join("")}
-        </div>`).join("")}
-    </div>`;
-  });
-
-  app.innerHTML=html;
+app.innerHTML=html;
 }
 
 function addPost(){
-  let f=img.files[0];
-  function push(imgData){
-    posts.unshift({
-      title:t.value,
-      content:c.value,
-      img:imgData||"",
-      user:user.name,
-      avatar:user.avatar,
-      comments:[]
-    });
-    save(); feed();
-  }
-  if(f) toBase64(f,(d)=>push(d)); else push("");
+let f=img.files[0];
+function go(imgData){
+posts.unshift({
+user:user.name,
+avatar:user.avatar,
+content:c.value,
+img:imgData||"",
+comments:[]
+});
+save();
+feed();
+}
+if(f)toBase64(f,(d)=>go(d)); else go();
 }
 
-function addComment(i){
-  let t=prompt("댓글");
-  posts[i].comments.push({text:t,replies:[]});
-  save(); feed();
+function comment(i){
+let t=prompt("댓글");
+posts[i].comments.push({text:t});
+save();
+feed();
 }
 
-function addReply(i,ci){
-  let t=prompt("대댓글");
-  posts[i].comments[ci].replies.push(t);
-  save(); feed();
-}
-
-/* EXPLORE */
+/* explore */
 function explore(){
-  app.innerHTML=`
-  <div class="grid">
-    ${posts.map(p=>`<div>${p.img?`<img src="${p.img}">`:''}</div>`).join("")}
-  </div>`;
+app.innerHTML=`
+<div class="grid">
+${posts.map(p=>p.img?`<img src="${p.img}">`:"").join("")}
+</div>`;
 }
 
-/* USERS */
+/* users */
 function users(){
-  app.innerHTML=usersData.map(u=>`
-    <div class="card user" onclick="profile('${u.name}')">
-      <div class="avatar" style="background-image:url('${u.avatar||''}')"></div>
-      <div><b>${u.name}</b><br>${u.id}</div>
-    </div>`).join("");
+app.innerHTML=usersData.map(u=>`
+<div class="card user">
+<div class="avatar" style="background-image:url('${u.avatar||''}')"></div>
+<b>${u.name}</b>
+</div>`).join("");
 }
 
-/* PROFILE */
-function profile(name){
-  let u=usersData.find(x=>x.name===name);
-  let userPosts=posts.filter(p=>p.user===name);
-
-  app.innerHTML=`
-  <div class="card">
-    <div class="avatar" style="width:70px;height:70px;background-image:url('${u.avatar||''}')"></div>
-    <h3>${u.name}</h3>
-    <p>${u.msg||''}</p>
-    <button onclick="openChat('${u.name}')">DM</button>
-  </div>
-
-  ${userPosts.map(p=>`
-    <div class="card">
-      <b>${p.title}</b>
-      <p>${p.content}</p>
-      ${p.img?`<img src="${p.img}" style="width:100%">`:''}
-    </div>`).join("")}
-  `;
-}
-
-/* DM LIST */
+/* DM */
 function dmList(){
-  let html=`<div class="card" onclick="createChat()">➕ 채팅 추가</div>`;
-  Object.keys(chats).forEach(n=>{
-    html+=`<div class="card" onclick="openChat('${n}')">${n}</div>`;
-  });
-  app.innerHTML=html;
+let html=`<div class="card" onclick="createChat()">➕ 채팅</div>`;
+Object.keys(chats).forEach(n=>{
+html+=`<div class="card" onclick="openChat('${n}')">${n}</div>`;
+});
+app.innerHTML=html;
 }
 
 function createChat(){
-  let html=`<div class="card"><h3>채팅 추가</h3>`;
-  usersData.filter(u=>u.name!==user.name).forEach(u=>{
-    html+=`
-    <div class="user" onclick="startChat('${u.name}')">
-      <div class="avatar" style="background-image:url('${u.avatar||''}')"></div>
-      <b>${u.name}</b>
-    </div>`;
-  });
-  html+=`</div>`;
-  app.innerHTML=html;
+app.innerHTML=usersData.map(u=>`
+<div class="card user" onclick="startChat('${u.name}')">
+<div class="avatar" style="background-image:url('${u.avatar||''}')"></div>
+${u.name}
+</div>`).join("");
 }
 
-function startChat(name){
-  if(!chats[name]) chats[name]=[];
-  save(); openChat(name);
+function startChat(n){
+if(!chats[n])chats[n]=[];
+openChat(n);
 }
 
-function openChat(name){
-  currentChat=name;
-  let html=`<div class="chat">`;
+function openChat(n){
+currentChat=n;
+let html=`<div class="chat">`;
 
-  (chats[name]||[]).forEach(c=>{
-    html+=`
-    <div class="msg ${c.me?'me':''}">
-      ${!c.me?`<div class="avatar" style="background-image:url('${c.avatar||''}')"></div>`:''}
-      <div class="bubble" style="background:${c.me?user.color:'#eee'}">
-        ${c.text||''}
-        ${c.img?`<img src="${c.img}" style="width:100%;margin-top:5px;border-radius:10px;">`:''}
-      </div>
-    </div>`;
-  });
+(chats[n]||[]).forEach(c=>{
+html+=`
+<div class="msg ${c.me?'me':''}">
+<div class="bubble">${c.text||''}</div>
+</div>`;
+});
 
-  html+=`
-    <input type="file" id="dmImg">
-    <input id="m">
-    <button onclick="send()">send</button>
-  </div>`;
+html+=`
+<input id="m">
+<button onclick="send()">send</button>
+</div>`;
 
-  app.innerHTML=html;
+app.innerHTML=html;
 }
 
 function send(){
-  let f=dmImg.files[0];
-  if(!chats[currentChat]) chats[currentChat]=[];
-
-  function push(img){
-    chats[currentChat].push({
-      text:m.value,
-      img:img||"",
-      me:true,
-      avatar:user.avatar
-    });
-    save(); openChat(currentChat);
-  }
-
-  if(f) toBase64(f,(d)=>push(d)); else push("");
+chats[currentChat].push({text:m.value,me:true});
+save();
+openChat(currentChat);
 }
 
-/* SETTING */
+/* 설정 */
 function setting(){
-  app.innerHTML=`
-  <div class="card">
-    프사<input type="file" id="a">
-    이름<input id="n" value="${user?.name||''}">
-    아이디<input id="i" value="${user?.id||''}">
-    상태<input id="s" value="${user?.msg||''}">
-    색상<input id="col" value="${user?.color||'#ffd1dc'}">
-    <button onclick="saveUser()">저장</button>
-  </div>`;
+if(!user)return;
+
+app.innerHTML=`
+<div class="card">
+이름<input id="n" value="${user.name}">
+상태<input id="s" value="${user.msg}">
+<button onclick="saveUser()">저장</button>
+</div>`;
 }
 
 function saveUser(){
-  let f=a.files[0];
-
-  function apply(img){
-    user.name=n.value;
-    user.id=i.value;
-    user.msg=s.value;
-    user.color=col.value;
-    if(img) user.avatar=img;
-    save(); alert("저장됨");
-  }
-
-  if(f) toBase64(f,(d)=>apply(d)); else apply();
+user.name=n.value;
+user.msg=s.value;
+save();
+alert("저장됨");
 }
 
 feed();
