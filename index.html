@@ -5,76 +5,122 @@
 <title>ARCADE</title>
 
 <style>
-body {
+body{
   margin:0;
-  font-family:sans-serif;
-  background:linear-gradient(135deg,#f3f3f3,#dfe9f3);
+  background:#dfe6ee;
+  display:flex;
+  justify-content:center;
+  font-family:-apple-system, sans-serif;
 }
 
-header {
+.phone{
+  width:390px;
+  height:844px;
+  background:linear-gradient(180deg,#f8f9fb,#e3ebf3);
+  border-radius:30px;
+  overflow:hidden;
+  position:relative;
+}
+
+header{
   display:flex;
   justify-content:space-between;
-  padding:20px;
-  font-weight:bold;
+  padding:15px;
+  font-weight:600;
 }
 
-.play {
+.play{
   background:linear-gradient(135deg,#6a5acd,#8fd3f4);
   color:white;
-  padding:10px 20px;
+  padding:8px 15px;
   border-radius:12px;
-  cursor:pointer;
 }
 
-.container {
-  padding:15px;
+.container{
+  padding:10px;
+  height:690px;
+  overflow:auto;
 }
 
-.card {
+.card{
   background:white;
   border-radius:20px;
-  padding:15px;
+  padding:12px;
   margin-bottom:10px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.05);
 }
 
-.grid {
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
+.avatar{
+  width:40px;height:40px;
+  border-radius:50%;
+  background:#ccc;
+}
+
+.user{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.chat{
+  display:flex;
+  flex-direction:column;
   gap:10px;
 }
 
-.grid div {
-  aspect-ratio:1;
-  background:#ddd;
-  border-radius:15px;
+.msg{
   display:flex;
-  align-items:end;
-  padding:5px;
+  gap:8px;
 }
 
-.bottom {
-  position:fixed;
+.me{justify-content:flex-end;}
+
+.bubble{
+  padding:10px;
+  border-radius:15px;
+  max-width:65%;
+}
+
+.bottom{
+  position:absolute;
   bottom:0;
   width:100%;
   display:flex;
   justify-content:space-around;
-  background:white;
   padding:10px;
+  background:white;
 }
 
-.chat { display:flex; flex-direction:column; gap:10px; }
-.me { align-self:flex-end; background:#ffd1dc; padding:10px; border-radius:15px;}
-.other { align-self:flex-start; background:#cce5ff; padding:10px; border-radius:15px;}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
 
-input, textarea {
+.grid div{
+  aspect-ratio:1;
+  background:#ddd;
+  border-radius:15px;
+  overflow:hidden;
+}
+
+.grid img{
   width:100%;
-  padding:8px;
-  margin-top:5px;
+  height:100%;
+  object-fit:cover;
+}
+
+.reply{
+  margin-left:20px;
+  border-left:2px solid #ddd;
+  padding-left:10px;
 }
 </style>
 </head>
 
 <body>
+
+<div class="phone">
 
 <header>
   ARCADE
@@ -87,125 +133,239 @@ input, textarea {
   <div onclick="feed()">Feed</div>
   <div onclick="explore()">Explore</div>
   <div onclick="users()">User</div>
-  <div onclick="dm()">DM</div>
-  <div onclick="setting()">Setting</div>
+  <div onclick="dmList()">DM</div>
+  <div onclick="setting()">Set</div>
+</div>
+
 </div>
 
 <script>
-let currentUser = JSON.parse(localStorage.getItem("user")) || null;
+let user = JSON.parse(localStorage.getItem("user")) || null;
+let usersData = JSON.parse(localStorage.getItem("users")) || [];
 let posts = JSON.parse(localStorage.getItem("posts")) || [];
-let chats = JSON.parse(localStorage.getItem("chats")) || [];
+let chats = JSON.parse(localStorage.getItem("chats")) || {};
+
+let currentChat = null;
 
 function save(){
-  localStorage.setItem("posts", JSON.stringify(posts));
-  localStorage.setItem("chats", JSON.stringify(chats));
+  localStorage.setItem("user",JSON.stringify(user));
+  localStorage.setItem("users",JSON.stringify(usersData));
+  localStorage.setItem("posts",JSON.stringify(posts));
+  localStorage.setItem("chats",JSON.stringify(chats));
 }
 
+/* 로그인 */
 function login(){
-  let id = prompt("ID");
-  let pw = prompt("PW");
+  let id=prompt("ID");
+  let pw=prompt("PW");
 
   if(id==="ARCADE" && pw==="01024773752"){
-    currentUser = {name:"ARCADE", color:"#ffd1dc"};
-    localStorage.setItem("user", JSON.stringify(currentUser));
-    alert("로그인 성공");
+    let name=prompt("이름");
+    user={name,id:"@"+name,color:"#ffd1dc"};
+    usersData.push(user);
+    save();
     feed();
-  } else {
-    alert("실패");
+  } else alert("실패");
+}
+
+/* 이미지 */
+function toBase64(file, callback){
+  const reader=new FileReader();
+  reader.onload=()=>callback(reader.result);
+  reader.readAsDataURL(file);
+}
+
+/* FEED */
+function feed(){
+  let html=`
+  <div class="card">
+    <input id="t" placeholder="제목">
+    <textarea id="c" placeholder="내용"></textarea>
+    <input type="file" id="img">
+    <button onclick="addPost()">업로드</button>
+  </div>`;
+
+  posts.forEach((p,i)=>{
+    html+=`
+    <div class="card">
+      <div class="user" onclick="profile('${p.user}')">
+        <div class="avatar"></div>
+        <b>${p.user}</b>
+      </div>
+      <b>${p.title}</b>
+      <p>${p.content}</p>
+      ${p.img?`<img src="${p.img}" style="width:100%;border-radius:15px;">`:''}
+
+      <button onclick="addComment(${i})">댓글</button>
+
+      ${(p.comments||[]).map((c,ci)=>`
+        <div>
+          💬 ${c.text}
+          <button onclick="addReply(${i},${ci})">↩</button>
+
+          ${(c.replies||[]).map(r=>`
+            <div class="reply">↳ ${r}</div>
+          `).join("")}
+        </div>
+      `).join("")}
+
+    </div>`;
+  });
+
+  app.innerHTML=html;
+}
+
+function addPost(){
+  let file=img.files[0];
+
+  if(file){
+    toBase64(file,(data)=>{
+      posts.unshift({title:t.value,content:c.value,img:data,user:user.name,comments:[]});
+      save(); feed();
+    });
+  }else{
+    posts.unshift({title:t.value,content:c.value,user:user.name,comments:[]});
+    save(); feed();
   }
 }
 
-function feed(){
-  let html = `
+function addComment(i){
+  let text=prompt("댓글");
+  posts[i].comments.push({text,replies:[]});
+  save(); feed();
+}
+
+function addReply(i,ci){
+  let text=prompt("대댓글");
+  posts[i].comments[ci].replies.push(text);
+  save(); feed();
+}
+
+/* EXPLORE */
+function explore(){
+  app.innerHTML=`
+  <div class="grid">
+  ${posts.map(p=>`<div>${p.img?`<img src="${p.img}">`:''}</div>`).join("")}
+  </div>`;
+}
+
+/* USERS */
+function users(){
+  app.innerHTML=`
+    <div class="card" onclick="createChat()">➕ 채팅 추가</div>
+    ${usersData.map(u=>`
+    <div class="card user" onclick="profile('${u.name}')">
+      <div class="avatar"></div>
+      <div>
+        <b>${u.name}</b><br>
+        <span style="color:gray">${u.id}</span>
+      </div>
+    </div>`).join("")}
+  `;
+}
+
+/* PROFILE */
+function profile(name){
+  let userPosts=posts.filter(p=>p.user===name);
+
+  app.innerHTML=`
+  <div class="card">
+    <div class="avatar"></div>
+    <h3>${name}</h3>
+    <button onclick="openChat('${name}')">DM</button>
+  </div>
+
+  ${userPosts.map(p=>`
     <div class="card">
-      <input id="title" placeholder="제목">
-      <textarea id="content" placeholder="내용"></textarea>
-      <button onclick="addPost()">업로드</button>
+      <b>${p.title}</b>
+      <p>${p.content}</p>
+      ${p.img?`<img src="${p.img}" style="width:100%">`:''}
     </div>
+  `).join("")}
+  `;
+}
+
+/* DM LIST */
+function dmList(){
+  let html=`
+    <div class="card" onclick="createChat()">➕ 채팅 추가</div>
   `;
 
-  posts.forEach((p,i)=>{
-    html += `
-      <div class="card">
-        <b>${p.title}</b>
-        <p>${p.content}</p>
-        <button onclick="delPost(${i})">삭제</button>
+  Object.keys(chats).forEach(name=>{
+    html+=`
+      <div class="card user" onclick="openChat('${name}')">
+        <div class="avatar"></div>
+        <b>${name}</b>
       </div>
     `;
   });
 
-  app.innerHTML = html;
+  app.innerHTML=html;
 }
 
-function addPost(){
-  let t = document.getElementById("title").value;
-  let c = document.getElementById("content").value;
-
-  posts.unshift({title:t, content:c});
+function createChat(){
+  let name=prompt("채팅할 유저 이름");
+  if(!chats[name]) chats[name]=[];
   save();
-  feed();
+  dmList();
 }
 
-function delPost(i){
-  posts.splice(i,1);
-  save();
-  feed();
-}
+/* DM */
+function openChat(name){
+  currentChat=name;
 
-function explore(){
-  app.innerHTML = `
-    <div class="grid">
-      ${posts.map(p=>`<div>${p.title}</div>`).join("")}
-    </div>
-  `;
-}
+  let html=`<div class="chat">`;
 
-function users(){
-  app.innerHTML = `
-    <div class="card">
-      <b>${currentUser?.name || "Guest"}</b><br>
-      <span style="color:gray">@user</span>
-    </div>
-  `;
-}
-
-function dm(){
-  let html = `<div class="chat">`;
-
-  chats.forEach(c=>{
-    html += `<div class="${c.me?'me':'other'}">${c.text}</div>`;
+  (chats[name]||[]).forEach(c=>{
+    html+=`
+    <div class="msg ${c.me?'me':''}">
+      ${!c.me?'<div class="avatar"></div>':''}
+      <div class="bubble" style="background:${c.me?user.color:'#e6ecf2'}">
+        ${c.text}
+        ${c.img?`<img src="${c.img}" style="width:100%;margin-top:5px;border-radius:10px;">`:''}
+      </div>
+    </div>`;
   });
 
-  html += `
-    <input id="msg">
+  html+=`
+    <input type="file" id="dmImg">
+    <input id="m">
     <button onclick="send()">send</button>
   </div>`;
 
-  app.innerHTML = html;
+  app.innerHTML=html;
 }
 
 function send(){
-  let m = document.getElementById("msg").value;
-  chats.push({text:m, me:true});
-  save();
-  dm();
+  let file=dmImg.files[0];
+
+  if(!chats[currentChat]) chats[currentChat]=[];
+
+  if(file){
+    toBase64(file,(data)=>{
+      chats[currentChat].push({text:m.value,img:data,me:true});
+      save(); openChat(currentChat);
+    });
+  }else{
+    chats[currentChat].push({text:m.value,me:true});
+    save(); openChat(currentChat);
+  }
 }
 
+/* SETTING */
 function setting(){
-  app.innerHTML = `
-    <div class="card">
-      이름 <input id="name" value="${currentUser?.name||''}">
-      <br><br>
-      색상 <input id="color" value="${currentUser?.color||'#ffd1dc'}">
-      <button onclick="saveUser()">저장</button>
-    </div>
-  `;
+  app.innerHTML=`
+  <div class="card">
+    이름 <input id="n" value="${user?.name||''}">
+    색상 <input id="col" value="${user?.color||'#ffd1dc'}">
+    <button onclick="saveUser()">저장</button>
+  </div>`;
 }
 
 function saveUser(){
-  currentUser.name = document.getElementById("name").value;
-  currentUser.color = document.getElementById("color").value;
-  localStorage.setItem("user", JSON.stringify(currentUser));
+  user.name=n.value;
+  user.color=col.value;
+  save();
   alert("저장됨");
 }
 
