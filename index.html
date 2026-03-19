@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARCADE</title>
+    <title>ARCADE SOCIAL - FINAL</title>
     <style>
-        :root { --p-hue: 260; --p: hsl(var(--p-hue), 60%, 60%); --bg: #f8f9fa; --white: #fff; --gray: #94a3b8; --me: hsl(var(--p-hue), 80%, 85%); --you: #ffebe6; }
+        :root { --p-hue: 260; --p: hsl(var(--p-hue), 60%, 60%); --bg: #f3f5f7; --white: #fff; --gray: #94a3b8; --me: hsl(var(--p-hue), 80%, 85%); --you: #ffebe6; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: #cbd5e1; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
         
@@ -16,115 +16,110 @@
         .logo { font-weight: 900; font-size: 1.4rem; color: var(--p); letter-spacing: -1px; }
 
         /* Main View */
-        main { flex: 1; overflow-y: auto; padding-bottom: 85px; background: var(--bg); position: relative; }
+        main { flex: 1; overflow-y: auto; padding-bottom: 90px; background: var(--bg); position: relative; }
         .page { display: none; padding: 16px; min-height: 100%; }
         .page.active { display: block; }
 
-        /* --- 1. FEED (사진 4번 느낌) --- */
+        /* --- 1. FEED --- */
         .post { background: #fff; border-radius: 22px; padding: 18px; margin-bottom: 16px; border: 1px solid #eee; }
-        .post-header { display: flex; align-items: center; margin-bottom: 12px; }
-        .p-img-round { width: 40px; height: 40px; border-radius: 50%; background: #eee; margin-right: 12px; object-fit: cover; }
+        .post-header { display: flex; align-items: center; margin-bottom: 10px; cursor: pointer; }
+        .p-img { width: 40px; height: 40px; border-radius: 50%; background: #eee; margin-right: 12px; object-fit: cover; }
         .post-title { font-weight: 800; font-size: 1.15rem; color: #1e293b; margin: 8px 0; display: block; }
-        .post-img { width: 100%; border-radius: 14px; margin-top: 14px; display: block; border: 1px solid #f1f5f9; }
+        .post-img { width: 100%; border-radius: 14px; margin-top: 10px; display: block; border: 1px solid #f1f5f9; }
 
-        /* --- 2. EXPLORE (사진 5번 그리드) --- */
+        /* --- 2. EXPLORE (Grid) --- */
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
         .grid-item { aspect-ratio: 1/1; background: #eee; overflow: hidden; }
         .grid-item img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* --- 3. AGENCY (사진 2번 유저목록) --- */
+        /* --- 3. AGENCY (List) --- */
         .u-card { display: flex; align-items: center; background: #fff; padding: 16px; border-radius: 18px; margin-bottom: 10px; border: 1px solid #eee; cursor: pointer; }
         .u-img-sq { width: 55px; height: 55px; border-radius: 16px; background: #eee; margin-right: 15px; object-fit: cover; }
-        .u-info b { display: block; font-size: 1rem; color: #1e293b; }
-        .u-info span { font-size: 0.8rem; color: var(--gray); }
 
-        /* --- 4. DM (사진 1번 채팅창) --- */
+        /* --- 4. DM (독립된 탭) --- */
         #page-dm { padding: 0; display: flex; flex-direction: column; background: #fff; }
-        .dm-header { padding: 15px; text-align: center; font-weight: bold; border-bottom: 1px solid #eee; font-size: 0.9rem; }
         .chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; background: #fafafa; }
-        .msg { display: flex; gap: 8px; max-width: 85%; position: relative; }
+        .msg { display: flex; gap: 8px; max-width: 85%; }
         .msg.me { align-self: flex-end; flex-direction: row-reverse; }
-        .msg-bubble { padding: 10px 15px; border-radius: 18px; font-size: 0.9rem; line-height: 1.4; position: relative; }
+        .msg-bubble { padding: 10px 15px; border-radius: 18px; font-size: 0.9rem; position: relative; }
         .me .msg-bubble { background: var(--me); border-bottom-right-radius: 2px; }
         .you .msg-bubble { background: var(--you); border-bottom-left-radius: 2px; border: 1px solid #ffdcd3; }
-        .msg-heart { position: absolute; bottom: -8px; left: -5px; background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 1px 5px; font-size: 0.6rem; }
         .chat-bar { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 10px; background: #fff; }
-        .chat-bar input { flex: 1; padding: 10px 15px; border-radius: 20px; border: 1px solid #eee; outline: none; }
+        .chat-bar input { flex: 1; padding: 12px; border-radius: 20px; border: 1px solid #eee; outline: none; }
 
-        /* --- 5. SETTING (독립된 세팅 화면) --- */
-        .set-card { background: #fff; padding: 25px; border-radius: 25px; border: 1px solid #eee; margin-bottom: 15px; }
-        .set-card h4 { font-size: 0.85rem; color: var(--p); margin-bottom: 20px; letter-spacing: 1px; }
+        /* --- 5. SETTING (복구 완료!) --- */
+        .set-card { background: #fff; padding: 25px; border-radius: 25px; border: 1px solid #eee; }
+        .set-card h4 { font-size: 0.85rem; color: var(--p); margin-bottom: 20px; }
         .set-card input, .set-card textarea { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #e2e8f0; outline: none; }
-        .save-btn { width: 100%; padding: 15px; background: var(--p); color: #fff; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .save-btn { width: 100%; padding: 15px; background: var(--p); color: #fff; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; }
 
-        /* Write Overlay (Slide-up) */
-        #write-overlay { 
-            position: absolute; bottom: -100%; left: 0; width: 100%; height: 90%; 
+        /* --- Write Window (Slide-up) --- */
+        #write-win { 
+            position: absolute; bottom: -100%; left: 0; width: 100%; height: 92%; 
             background: #fff; z-index: 500; border-radius: 30px 30px 0 0;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.1); transition: 0.4s ease;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.1); transition: 0.4s cubic-bezier(0.17, 0.84, 0.44, 1);
             display: flex; flex-direction: column; padding: 25px;
         }
-        #write-overlay.open { bottom: 0; }
-        .ov-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .img-pick { width: 100%; height: 200px; background: #f3f5f7; border-radius: 15px; border: 2px dashed #eee; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; }
-        #post-text { flex: 1; border: none; outline: none; font-size: 1.1rem; resize: none; margin-top: 15px; }
+        #write-win.open { bottom: 0; }
+        .win-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .img-slot { width: 100%; height: 200px; background: #f8fafc; border: 2px dashed #eee; border-radius: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
 
         /* Floating Btn */
-        .float-btn { position: absolute; bottom: 105px; right: 25px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--p), #a78bfa); color: #fff; border: none; font-size: 30px; cursor: pointer; z-index: 200; box-shadow: 0 10px 25px rgba(93, 62, 188, 0.3); }
+        .float-btn { position: absolute; bottom: 105px; right: 25px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--p), #a78bfa); color: #fff; border: none; font-size: 30px; cursor: pointer; z-index: 200; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
 
-        /* Nav */
+        /* Nav (5개 탭) */
         nav { position: absolute; bottom: 0; width: 100%; height: 85px; background: #fff; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-around; align-items: center; z-index: 150; }
-        nav button { background: none; border: none; color: #cbd5e1; cursor: pointer; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        nav button { background: none; border: none; color: #cbd5e1; cursor: pointer; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
         nav button.active { color: var(--p); font-weight: 800; }
-        .nav-icon { font-size: 1.5rem; }
+        .nav-icon { font-size: 1.4rem; }
     </style>
 </head>
 <body>
 
 <div id="app">
     <header>
-        <div class="logo">ARCADE</div>
-        <button onclick="sysLogin()" style="border:none; background:none; color:var(--p); font-weight:bold; font-size:0.75rem; cursor:pointer;">LOGIN</button>
+        <div class="logo" onclick="location.reload()">ARCADE</div>
+        <div style="font-size:0.7rem; font-weight:bold; color:var(--p);">LIVE 🟢</div>
     </header>
 
-    <main id="view-port">
+    <main>
         <section id="page-feed" class="page active"></section>
         <section id="page-explore" class="page"><div class="grid" id="explore-grid"></div></section>
         <section id="page-agency" class="page"></section>
         <section id="page-dm" class="page">
-            <div class="dm-header" id="dm-title">상대를 선택하세요</div>
+            <div id="dm-header-name" style="padding:15px; text-align:center; font-weight:bold; border-bottom:1px solid #eee;">상대를 선택하세요</div>
             <div class="chat-box" id="chat-box"></div>
             <div class="chat-bar">
                 <input type="text" id="dm-input" placeholder="메시지 입력..." onkeypress="if(event.keyCode==13) sendDM()">
-                <button onclick="sendDM()" style="border:none; background:none; color:var(--p); font-weight:bold;">전송</button>
+                <button onclick="sendDM()" style="border:none; background:none; color:var(--p); font-weight:bold;">보내기</button>
             </div>
         </section>
         <section id="page-setting" class="page">
             <div class="set-card">
                 <h4>MY PROFILE SETTING</h4>
-                <input type="text" id="set-name" placeholder="이름">
-                <input type="text" id="set-id" placeholder="아이디 (@아이디)">
-                <textarea id="set-status" placeholder="상태 메시지를 입력하세요"></textarea>
-                <p style="font-size:0.7rem; margin-bottom:5px; font-weight:bold;">채팅 테마 색상 (Hue)</p>
+                <input type="text" id="set-name" placeholder="이름 (예: 아케이드)">
+                <input type="text" id="set-id" placeholder="아이디 (예: @arcade.buzy)">
+                <textarea id="set-status" placeholder="상태 메시지" style="height:80px;"></textarea>
+                <p style="font-size:0.7rem; margin-bottom:5px; font-weight:bold;">Chat Theme (Hue)</p>
                 <input type="range" id="set-hue" min="0" max="360" oninput="updateHue(this.value)">
-                <button class="save-btn" onclick="saveProfile()">설정 저장</button>
+                <button class="save-btn" onclick="saveProfile()">설정 저장하기</button>
             </div>
         </section>
     </main>
 
-    <div id="write-overlay">
-        <div class="ov-nav">
-            <button onclick="toggleWrite(false)" style="background:none; border:none; color:#888; font-size:1.5rem;">×</button>
-            <b style="font-size:1.1rem;">새 게시물 작성</b>
-            <button onclick="submitPost()" style="background:var(--p); color:#fff; border:none; padding:7px 18px; border-radius:20px; font-weight:bold;">공유</button>
+    <div id="write-win">
+        <div class="win-nav">
+            <button onclick="toggleWrite(false)" style="background:none; border:none; color:#94a3b8; font-size:1.5rem;">×</button>
+            <b style="font-size:1.1rem;">새 게시물</b>
+            <button onclick="postSubmit()" style="background:var(--p); color:#fff; border:none; padding:7px 18px; border-radius:20px; font-weight:bold; cursor:pointer;">공유</button>
         </div>
-        <div class="img-pick" onclick="document.getElementById('file-in').click()">
-            <img id="write-preview" style="width:100%; height:100%; object-fit:cover; display:none;">
-            <span id="pick-text">탭하여 사진 추가</span>
+        <div class="img-slot" onclick="document.getElementById('file-in').click()">
+            <img id="preview-img" style="width:100%; height:100%; object-fit:cover; display:none;">
+            <span id="slot-text">📸 사진 추가</span>
         </div>
         <input type="file" id="file-in" style="display:none;" onchange="imgPreview(this)">
-        <input type="text" id="post-title-in" placeholder="제목 (두껍게)" style="width:100%; padding:15px 0; border:none; border-bottom:1px solid #eee; font-size:1.2rem; font-weight:800; outline:none;">
-        <textarea id="post-text" placeholder="무슨 생각을 하고 계신가요?"></textarea>
+        <input type="text" id="post-title-in" placeholder="제목을 입력하세요" style="width:100%; padding:15px 0; border:none; border-bottom:1px solid #eee; font-size:1.2rem; font-weight:800; outline:none;">
+        <textarea id="post-content-in" placeholder="내용을 입력하세요..." style="width:100%; flex:1; border:none; outline:none; font-size:1rem; resize:none; margin-top:15px;"></textarea>
     </div>
 
     <button class="float-btn" id="write-trigger" onclick="toggleWrite(true)">+</button>
@@ -143,12 +138,13 @@
     let targetId = null;
     let tempImg = "";
     let db = JSON.parse(localStorage.getItem('arc_db')) || {
-        posts: [{author:'ARCADE', title:'반가워요!', content:'ARCADE 소셜에 오신 것을 환영합니다.', img:'https://picsum.photos/400/300'}],
+        posts: [{author:'ARCADE', title:'반갑습니다!', content:'나만의 아케이드 소셜 공간입니다.', img:'https://picsum.photos/400/300'}],
         chats: [],
         profiles: { 'ARCADE': {name:'아케이드', id:'@arcade.buzy', hue:260} }
     };
     function save() { localStorage.setItem('arc_db', JSON.stringify(db)); }
 
+    // 탭 전환 시스템 (세팅 탭 포함)
     function showPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
@@ -158,36 +154,40 @@
         render();
     }
 
-    function toggleWrite(open) { document.getElementById('write-overlay').classList.toggle('open', open); }
+    function toggleWrite(open) { document.getElementById('write-win').classList.toggle('open', open); }
 
     function imgPreview(input) {
         if(input.files[0]) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 tempImg = e.target.result;
-                document.getElementById('write-preview').src = tempImg;
-                document.getElementById('write-preview').style.display = 'block';
-                document.getElementById('pick-text').style.display = 'none';
+                document.getElementById('preview-img').src = tempImg;
+                document.getElementById('preview-img').style.display = 'block';
+                document.getElementById('slot-text').style.display = 'none';
             };
             reader.readAsDataURL(input.files[0]);
         }
     }
 
-    function submitPost() {
+    function postSubmit() {
         const title = document.getElementById('post-title-in').value;
-        const text = document.getElementById('post-text').value;
-        if(!title || !text) return alert("내용을 입력해주세요!");
+        const text = document.getElementById('post-content-in').value;
+        if(!title || !text) return alert("내용을 채워주세요!");
         db.posts.unshift({author:curId, title, content:text, img:tempImg});
         save();
         location.reload(); 
     }
 
-    function startChat(id) { targetId = id; showPage('dm'); }
+    // 유저 클릭 시 DM 탭으로 이동
+    function startChat(id) { 
+        targetId = id; 
+        showPage('dm'); 
+    }
 
     function sendDM() {
         const input = document.getElementById('dm-input');
         if(!input.value || !targetId) return;
-        db.chats.push({from:curId, to:targetId, text:input.value, time:new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})});
+        db.chats.push({from:curId, to:targetId, text:input.value});
         save(); input.value = ''; render();
     }
 
@@ -200,12 +200,7 @@
             status: document.getElementById('set-status').value,
             hue: document.getElementById('set-hue').value
         };
-        save(); alert("프로필 저장 완료!"); render();
-    }
-
-    function sysLogin() {
-        const id = prompt("아이디"); 
-        if(id) { curId = id; localStorage.setItem('arc_cur', id); location.reload(); }
+        save(); alert("설정이 저장되었습니다!"); render();
     }
 
     function render() {
@@ -216,11 +211,11 @@
         document.getElementById('page-feed').innerHTML = db.posts.map(p => `
             <div class="post">
                 <div class="post-header" onclick="startChat('${p.author}')">
-                    <img src="https://i.pravatar.cc/100?u=${p.author}" class="p-img-round">
+                    <img src="https://i.pravatar.cc/100?u=${p.author}" class="p-img">
                     <b>${p.author}</b>
                 </div>
                 <b class="post-title">${p.title}</b>
-                <p style="font-size:0.95rem; line-height:1.5;">${p.content}</p>
+                <p style="font-size:0.95rem; color:#444;">${p.content}</p>
                 ${p.img ? `<img src="${p.img}" class="post-img">` : ''}
             </div>`).join('');
 
@@ -231,20 +226,17 @@
         document.getElementById('page-agency').innerHTML = Object.keys(db.profiles).map(k => `
             <div class="u-card" onclick="startChat('${k}')">
                 <img src="https://i.pravatar.cc/100?u=${k}" class="u-img-sq">
-                <div class="u-info"><b>${db.profiles[k].name}</b><span>${db.profiles[k].id}</span></div>
+                <div><b>${db.profiles[k].name}</b><br><span style="color:#888; font-size:0.8rem;">${db.profiles[k].id}</span></div>
             </div>`).join('');
 
         // DM
         if(targetId && document.getElementById('page-dm').classList.contains('active')) {
-            document.getElementById('dm-title').innerText = targetId + " 님과 대화";
+            document.getElementById('dm-header-name').innerText = targetId + " 님";
             const logs = db.chats.filter(c => (c.from === curId && c.to === targetId) || (c.from === targetId && c.to === curId));
             document.getElementById('chat-box').innerHTML = logs.map(c => `
                 <div class="msg ${c.from === curId ? 'me' : 'you'}">
                     ${c.from !== curId ? `<img src="https://i.pravatar.cc/100?u=${c.from}" style="width:32px; height:32px; border-radius:50%;">` : ''}
-                    <div class="msg-bubble">
-                        ${c.text}
-                        ${c.from !== curId ? '<div class="msg-heart">❤️</div>' : ''}
-                    </div>
+                    <div class="msg-bubble">${c.text}</div>
                 </div>`).join('');
             const cb = document.getElementById('chat-box'); cb.scrollTop = cb.scrollHeight;
         }
@@ -261,3 +253,4 @@
 </script>
 </body>
 </html>
+
