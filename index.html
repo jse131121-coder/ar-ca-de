@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ARCADE SOCIAL</title>
     <style>
         :root { --p-hue: 260; --p: hsl(var(--p-hue), 60%, 60%); --bg: #f8fafc; --white: #fff; --gray: #94a3b8; --me: hsl(var(--p-hue), 80%, 85%); --you: #ffebe6; }
@@ -10,110 +10,139 @@
         body { background: #e2e8f0; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
         #app { width: 100%; max-width: 430px; background: var(--white); display: flex; flex-direction: column; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
         
-        /* Header */
+        /* Login Overlay */
+        #login-screen { position: absolute; inset: 0; background: #fff; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
+        #login-screen input { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 12px; border: 1px solid #ddd; outline: none; }
+        #login-screen button { width: 100%; padding: 15px; background: var(--p); color: #fff; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; }
+
         header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; background: #fff; z-index: 100; }
         .logo { font-weight: 900; font-size: 1.4rem; color: var(--p); letter-spacing: -1px; }
+        .play-btn { background: none; border: 1px solid var(--p); color: var(--p); padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
 
-        /* Main Content */
-        main { flex: 1; overflow-y: auto; padding-bottom: 90px; background: var(--bg); position: relative; }
+        main { flex: 1; overflow-y: auto; padding-bottom: 90px; background: var(--bg); }
         .page { display: none; padding: 16px; min-height: 100%; }
         .page.active { display: block; }
 
-        /* Posts (Feed) */
-        .post { background: #fff; border-radius: 22px; padding: 18px; margin-bottom: 16px; border: 1px solid #eee; }
-        .post-header { display: flex; align-items: center; margin-bottom: 10px; cursor: pointer; }
+        /* Feed */
+        .post { background: #fff; border-radius: 22px; padding: 18px; margin-bottom: 16px; border: 1px solid #eee; position: relative; }
+        .post-hdr { display: flex; align-items: center; margin-bottom: 10px; cursor: pointer; }
         .p-img { width: 40px; height: 40px; border-radius: 50%; background: #eee; margin-right: 12px; object-fit: cover; }
-        .post-title { font-weight: 800; font-size: 1.1rem; color: #1e293b; margin: 5px 0; }
-        .post-img { width: 100%; border-radius: 14px; margin-top: 10px; border: 1px solid #f1f5f9; }
+        .p-name { font-weight: 800; font-size: 0.95rem; }
+        .post-title { font-weight: 900; font-size: 1.2rem; display: block; margin: 8px 0; }
+        .post-img { width: 100%; border-radius: 14px; margin-top: 10px; display: block; }
+        .post-btns { display: flex; gap: 15px; margin-top: 15px; font-size: 0.85rem; color: #64748b; }
+        .comment-area { margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 10px; font-size: 0.85rem; }
 
-        /* Agency List */
-        .u-card { display: flex; align-items: center; background: #fff; padding: 16px; border-radius: 18px; margin-bottom: 10px; border: 1px solid #eee; cursor: pointer; }
+        /* Explore */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
+        .grid-item { aspect-ratio: 1/1; background: #eee; overflow: hidden; position: relative; }
+        .grid-item img { width: 100%; height: 100%; object-fit: cover; }
+        .grid-item span { position: absolute; bottom: 5px; left: 5px; color: #fff; font-size: 0.6rem; text-shadow: 1px 1px 2px #000; }
+
+        /* User List & Profile View */
+        .u-card { display: flex; align-items: center; background: #fff; padding: 16px; border-radius: 20px; margin-bottom: 10px; border: 1px solid #eee; cursor: pointer; }
         .u-img-sq { width: 55px; height: 55px; border-radius: 16px; background: #eee; margin-right: 15px; object-fit: cover; }
+        .u-info b { display: block; font-size: 1rem; color: #1e293b; }
+        .u-info span { font-size: 0.8rem; color: var(--gray); }
 
-        /* DM Chat */
-        #page-dm { padding: 0; display: flex; flex-direction: column; background: #fff; }
-        .chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; background: #fafafa; }
-        .msg-bubble { padding: 10px 15px; border-radius: 18px; font-size: 0.9rem; max-width: 80%; line-height: 1.4; }
-        .me { align-self: flex-end; background: var(--me); border-bottom-right-radius: 2px; }
-        .you { align-self: flex-start; background: var(--you); border-bottom-left-radius: 2px; border: 1px solid #ffdcd3; }
+        #profile-view { position: fixed; inset: 0; background: #fff; z-index: 600; display: none; padding: 20px; overflow-y: auto; }
+        .prof-hdr { text-align: center; padding: 40px 0; }
+        .prof-img { width: 100px; height: 100px; border-radius: 40px; border: 4px solid var(--p); margin-bottom: 15px; }
 
-        /* --- SETTING (진짜 구현됨) --- */
-        .set-wrap { display: flex; flex-direction: column; gap: 15px; }
-        .set-p-area { align-self: center; text-align: center; margin-bottom: 10px; }
-        .set-p-circle { width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--p); overflow: hidden; margin-bottom: 8px; cursor: pointer; position: relative; }
-        .set-p-circle img { width: 100%; height: 100%; object-fit: cover; }
-        .set-input-group { background: #fff; padding: 15px; border-radius: 18px; border: 1px solid #eee; }
-        .set-input-group label { display: block; font-size: 0.7rem; font-weight: 800; color: var(--p); margin-bottom: 6px; }
-        .set-input-group input, .set-input-group textarea { width: 100%; border: none; background: #f8fafc; padding: 10px; border-radius: 10px; font-size: 0.95rem; outline: none; }
+        /* DM */
+        .chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: #fff; }
+        .msg { display: flex; gap: 10px; max-width: 85%; }
+        .msg.me { align-self: flex-end; flex-direction: row-reverse; }
+        .bubble { padding: 10px 15px; border-radius: 18px; font-size: 0.9rem; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .me .bubble { background: var(--me); border-bottom-right-radius: 2px; }
+        .you .bubble { background: var(--you); border-bottom-left-radius: 2px; }
+        .msg img { max-width: 200px; border-radius: 10px; margin-top: 5px; display: block; }
 
-        /* --- WRITE SLIDE-UP WINDOW --- */
-        #write-win { 
-            position: absolute; bottom: -100%; left: 0; width: 100%; height: 92%; 
-            background: #fff; z-index: 500; border-radius: 30px 30px 0 0;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.1); transition: 0.4s cubic-bezier(0.17, 0.84, 0.44, 1);
-            display: flex; flex-direction: column; padding: 25px;
-        }
+        /* Write & Setting */
+        #write-win { position: absolute; bottom: -100%; left: 0; width: 100%; height: 92%; background: #fff; z-index: 700; border-radius: 30px 30px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.1); transition: 0.4s; display: flex; flex-direction: column; padding: 25px; }
         #write-win.open { bottom: 0; }
-        .win-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .write-img-slot { width: 100%; height: 200px; background: #f1f5f9; border: 2px dashed #cbd5e1; border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
-        .write-img-slot img { width: 100%; height: 100%; object-fit: cover; }
+        .set-group { background: #fff; padding: 15px; border-radius: 15px; border: 1px solid #eee; margin-bottom: 10px; }
+        .set-group label { display: block; font-size: 0.7rem; color: var(--p); font-weight: bold; margin-bottom: 5px; }
+        .set-group input, .set-group textarea { width: 100%; border: none; background: #f8fafc; padding: 10px; border-radius: 10px; outline: none; }
 
-        /* Bottom Nav & Floating */
-        .float-btn { position: absolute; bottom: 105px; right: 25px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--p), #a78bfa); color: #fff; border: none; font-size: 30px; cursor: pointer; z-index: 200; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         nav { position: absolute; bottom: 0; width: 100%; height: 85px; background: #fff; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-around; align-items: center; z-index: 150; }
-        nav button { background: none; border: none; color: #cbd5e1; cursor: pointer; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; }
+        nav button { background: none; border: none; color: #cbd5e1; cursor: pointer; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; flex: 1; }
         nav button.active { color: var(--p); font-weight: 800; }
+        .float-btn { position: absolute; bottom: 105px; right: 25px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--p), #a78bfa); color: #fff; border: none; font-size: 30px; cursor: pointer; z-index: 200; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
 
 <div id="app">
-    <header><div class="logo">ARCADE</div></header>
+    <div id="login-screen">
+        <h2 style="margin-bottom:30px; color:var(--p); font-weight:900;">ARCADE PLAY</h2>
+        <input type="text" id="l-id" placeholder="ID">
+        <input type="password" id="l-pw" placeholder="PW">
+        <button onclick="handleLogin()">LOGIN</button>
+        <p style="font-size:0.7rem; color:#888; margin-top:20px;">Default: ARCADE / 01024773752</p>
+    </div>
 
-    <main id="main-scroll">
+    <header>
+        <div class="logo">ARCADE</div>
+        <button class="play-btn" onclick="toggleLogin(true)">PLAY</button>
+    </header>
+
+    <main id="main-port">
         <section id="page-feed" class="page active"></section>
-        <section id="page-explore" class="page"><div id="explore-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:3px;"></div></section>
+        <section id="page-explore" class="page"><div class="grid" id="explore-grid"></div></section>
         <section id="page-agency" class="page"></section>
-        <section id="page-dm" class="page">
-            <div id="dm-target" style="padding:15px; text-align:center; font-weight:bold; border-bottom:1px solid #eee;">상대를 선택하세요</div>
+        <section id="page-dm" class="page" style="padding:0; display:flex; flex-direction:column;">
+            <div id="dm-header" style="padding:15px; border-bottom:1px solid #eee; font-weight:bold; text-align:center;">메시지</div>
             <div class="chat-box" id="chat-box"></div>
-            <div style="padding:15px; display:flex; gap:10px; background:#fff; border-top:1px solid #eee;">
-                <input type="text" id="dm-input" placeholder="메시지 입력..." style="flex:1; padding:12px; border-radius:20px; border:1px solid #eee; outline:none;">
-                <button onclick="sendDM()" style="border:none; background:none; color:var(--p); font-weight:bold;">보내기</button>
+            <div style="padding:15px; border-top:1px solid #eee; display:flex; gap:10px; background:#fff;">
+                <input type="text" id="dm-input" placeholder="메시지, 링크 입력..." style="flex:1; padding:12px; border-radius:20px; border:1px solid #eee; outline:none;">
+                <button onclick="document.getElementById('dm-file').click()" style="border:none; background:none;">🖼️</button>
+                <input type="file" id="dm-file" style="display:none;" onchange="sendDMImg(this)">
+                <button onclick="sendDMText()" style="border:none; background:none; color:var(--p); font-weight:bold;">보내기</button>
             </div>
         </section>
-
         <section id="page-setting" class="page">
-            <div class="set-wrap">
-                <div class="set-p-area">
-                    <div class="set-p-circle" onclick="document.getElementById('set-img-file').click()">
-                        <img id="set-img-preview" src="https://i.pravatar.cc/150?u=me">
-                    </div>
-                    <input type="file" id="set-img-file" style="display:none;" onchange="updateProfileImg(this)">
-                    <span style="font-size:0.7rem; color:var(--gray);">프로필 사진 변경</span>
+            <div style="text-align:center; margin-bottom:20px;">
+                <div style="position:relative; display:inline-block;">
+                    <img id="set-pre" src="" style="width:100px; height:100px; border-radius:40px; border:3px solid var(--p); object-fit:cover;">
+                    <button onclick="document.getElementById('set-f').click()" style="position:absolute; bottom:0; right:0; background:var(--p); color:#fff; border:none; width:30px; height:30px; border-radius:50%;">+</button>
                 </div>
-                <div class="set-input-group"><label>NAME</label><input type="text" id="set-name" placeholder="이름 입력"></div>
-                <div class="set-input-group"><label>ID</label><input type="text" id="set-id" placeholder="@아이디 입력"></div>
-                <div class="set-input-group"><label>STATUS</label><textarea id="set-status" placeholder="상태 메시지"></textarea></div>
-                <div class="set-input-group"><label>THEME (HUE)</label><input type="range" id="set-hue" min="0" max="360" oninput="changeTheme(this.value)"></div>
-                <button onclick="saveProfile()" style="width:100%; padding:15px; background:var(--p); color:#fff; border:none; border-radius:15px; font-weight:bold; cursor:pointer;">저장하기</button>
+                <input type="file" id="set-f" style="display:none;" onchange="updateSetImg(this)">
             </div>
+            <div class="set-group"><label>NAME</label><input type="text" id="set-name"></div>
+            <div class="set-group"><label>ID</label><input type="text" id="set-id"></div>
+            <div class="set-group"><label>STATUS</label><textarea id="set-status"></textarea></div>
+            <button onclick="saveProfile()" style="width:100%; padding:15px; background:var(--p); color:#fff; border:none; border-radius:15px; font-weight:bold;">저장 및 계정 추가</button>
         </section>
     </main>
 
+    <div id="profile-view">
+        <button onclick="closeProfile()" style="border:none; background:none; font-size:1.5rem; float:right;">×</button>
+        <div class="prof-hdr">
+            <img id="pv-img" class="prof-img">
+            <h2 id="pv-name"></h2>
+            <p id="pv-id" style="color:var(--gray);"></p>
+            <div style="margin:20px 0;">
+                <button id="pv-follow" onclick="toggleFollow()" style="padding:8px 30px; border-radius:20px; border:none; background:var(--p); color:#fff; font-weight:bold;">팔로우</button>
+                <button onclick="startDMPv()" style="padding:8px 30px; border-radius:20px; border:1px solid #ddd; background:#fff; font-weight:bold; margin-left:10px;">메시지</button>
+            </div>
+        </div>
+        <div class="grid" id="pv-posts"></div>
+    </div>
+
     <div id="write-win">
-        <div class="win-header">
-            <button onclick="toggleWrite(false)" style="background:none; border:none; color:#94a3b8; font-size:1.5rem;">×</button>
-            <b style="font-size:1.1rem;">새 게시물 작성</b>
-            <button onclick="submitPost()" style="background:var(--p); color:#fff; border:none; padding:7px 20px; border-radius:20px; font-weight:bold;">공유</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <button onclick="toggleWrite(false)" style="border:none; background:none; font-size:1.5rem;">×</button>
+            <b>게시물 작성</b>
+            <button onclick="submitPost()" style="background:var(--p); color:#fff; border:none; padding:8px 20px; border-radius:20px; font-weight:bold;">공유</button>
         </div>
-        <div class="write-img-slot" onclick="document.getElementById('post-file').click()">
-            <img id="post-img-preview" style="display:none;">
-            <span id="post-img-text">📸 사진 추가</span>
+        <div style="width:100%; height:150px; background:#f1f5f9; border-radius:15px; display:flex; align-items:center; justify-content:center; overflow:hidden; border:2px dashed #ccc;" onclick="document.getElementById('p-f').click()">
+            <img id="p-pre" style="display:none; width:100%; height:100%; object-fit:cover;">
+            <span id="p-txt">📸 사진 선택</span>
         </div>
-        <input type="file" id="post-file" style="display:none;" onchange="previewPostImg(this)">
-        <input type="text" id="post-title-in" placeholder="제목을 입력하세요" style="width:100%; padding:15px 0; border:none; border-bottom:1px solid #eee; font-size:1.2rem; font-weight:800; outline:none;">
-        <textarea id="post-content-in" placeholder="내용을 입력하세요..." style="width:100%; flex:1; border:none; outline:none; font-size:1rem; resize:none; margin-top:15px;"></textarea>
+        <input type="file" id="p-f" style="display:none;" onchange="previewPostImg(this)">
+        <input type="text" id="p-title" placeholder="제목 (두껍게)" style="width:100%; padding:15px 0; border:none; border-bottom:1px solid #eee; font-size:1.2rem; font-weight:900; outline:none;">
+        <textarea id="p-content" placeholder="내용을 입력하세요..." style="width:100%; flex:1; border:none; outline:none; font-size:1rem; resize:none; margin-top:15px;"></textarea>
     </div>
 
     <button class="float-btn" id="write-trigger" onclick="toggleWrite(true)">+</button>
@@ -121,21 +150,44 @@
     <nav>
         <button onclick="showPage('feed')" id="nav-feed" class="active">🏛️<br>Feed</button>
         <button onclick="showPage('explore')" id="nav-explore">✨<br>Explore</button>
-        <button onclick="showPage('agency')" id="nav-agency">🪐<br>Agency</button>
+        <button onclick="showPage('agency')" id="nav-agency">🪐<br>User</button>
         <button onclick="showPage('dm')" id="nav-dm">💬<br>DM</button>
         <button onclick="showPage('setting')" id="nav-setting">⚙️<br>Setting</button>
     </nav>
 </div>
 
 <script>
-    let curId = 'ME'; let targetId = null; let tempPostImg = ""; let tempProfileImg = "https://i.pravatar.cc/150?u=me";
-    let db = JSON.parse(localStorage.getItem('arc_final')) || {
-        posts: [{author:'ARCADE', title:'환영합니다!', content:'이곳은 당신의 아케이드입니다.', img:'https://picsum.photos/400/300'}],
-        chats: [],
-        profiles: { 'ARCADE': {name:'아케이드', id:'@arcade.buzy', img:'https://i.pravatar.cc/100?u=1'}, 'ME': {name:'사용자', id:'@me', img:tempProfileImg, status:'반가워요!', hue:260} }
-    };
-    function save() { localStorage.setItem('arc_final', JSON.stringify(db)); }
+    // --- Data Management ---
+    let currentUser = 'ARCADE';
+    let activeChatTarget = null;
+    let viewingUser = null;
+    let tempPostImg = "";
 
+    const defaultDB = {
+        users: { 
+            'ARCADE': { name:'아케이드', id:'@arcade', pw:'01024773752', img:'https://i.pravatar.cc/150?u=arcade', status:'Welcome!', following:[] },
+            'GEMINI': { name:'제미나이', id:'@ai_gem', pw:'1234', img:'https://i.pravatar.cc/150?u=ai', status:'Hello World', following:[] }
+        },
+        posts: [
+            { id: 1, author: 'GEMINI', title: 'ARCADE SOCIAL OPEN!', content: '멋진 소셜 공간이 탄생했습니다.', img: 'https://picsum.photos/400/300', comments: [] }
+        ],
+        chats: []
+    };
+
+    let db = JSON.parse(localStorage.getItem('arcade_v10')) || defaultDB;
+    function save() { localStorage.setItem('arcade_v10', JSON.stringify(db)); }
+
+    // --- Auth ---
+    function handleLogin() {
+        const id = document.getElementById('l-id').value;
+        const pw = document.getElementById('l-pw').value;
+        if(db.users[id] && db.users[id].pw === pw) {
+            currentUser = id; toggleLogin(false); render();
+        } else { alert("계정 정보가 틀립니다."); }
+    }
+    function toggleLogin(show) { document.getElementById('login-screen').style.display = show ? 'flex' : 'none'; }
+
+    // --- Page Logic ---
     function showPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
@@ -145,85 +197,141 @@
         render();
     }
 
-    // --- Profile Logic ---
-    function updateProfileImg(input) {
-        if(input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => { tempProfileImg = e.target.result; document.getElementById('set-img-preview').src = tempProfileImg; };
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-    function saveProfile() {
-        db.profiles['ME'] = { name: document.getElementById('set-name').value, id: document.getElementById('set-id').value, img: tempProfileImg, status: document.getElementById('set-status').value, hue: document.getElementById('set-hue').value };
-        save(); alert("저장 완료!"); render();
-    }
-    function changeTheme(v) { document.documentElement.style.setProperty('--p-hue', v); }
-
     // --- Post Logic ---
-    function toggleWrite(open) { document.getElementById('write-win').classList.toggle('open', open); }
-    function previewPostImg(input) {
-        if(input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => { tempPostImg = e.target.result; document.getElementById('post-img-preview').src = tempPostImg; document.getElementById('post-img-preview').style.display='block'; document.getElementById('post-img-text').style.display='none'; };
-            reader.readAsDataURL(input.files[0]);
+    function toggleWrite(o) { document.getElementById('write-win').classList.toggle('open', o); }
+    function previewPostImg(i) {
+        if(i.files[0]) {
+            const r = new FileReader(); r.onload=(e)=>{ tempPostImg=e.target.result; document.getElementById('p-pre').src=tempPostImg; document.getElementById('p-pre').style.display='block'; document.getElementById('p-txt').style.display='none'; }; r.readAsDataURL(i.files[0]);
         }
     }
     function submitPost() {
-        const title = document.getElementById('post-title-in').value;
-        const content = document.getElementById('post-content-in').value;
-        if(!title) return;
-        db.posts.unshift({author:db.profiles['ME'].name, title, content, img:tempPostImg});
-        save(); location.reload();
+        const t = document.getElementById('p-title').value;
+        const c = document.getElementById('p-content').value;
+        if(!t) return;
+        db.posts.unshift({ id: Date.now(), author: currentUser, title: t, content: c, img: tempPostImg, comments: [] });
+        save(); toggleWrite(false); render();
+    }
+    function deletePost(id) { db.posts = db.posts.filter(p => p.id !== id); save(); render(); }
+    function addComment(pId) {
+        const txt = prompt("댓글을 입력하세요");
+        if(txt) {
+            const post = db.posts.find(p => p.id === pId);
+            post.comments.push({ user: currentUser, text: txt });
+            save(); render();
+        }
+    }
+
+    // --- Profile & Follow ---
+    function openProfile(uId) {
+        viewingUser = uId;
+        const u = db.users[uId];
+        document.getElementById('pv-img').src = u.img;
+        document.getElementById('pv-name').innerText = u.name;
+        document.getElementById('pv-id').innerText = u.id;
+        document.getElementById('pv-follow').innerText = db.users[currentUser].following.includes(uId) ? "팔로잉" : "팔로우";
+        
+        const myPosts = db.posts.filter(p => p.author === uId);
+        document.getElementById('pv-posts').innerHTML = myPosts.map(p => `<div class="grid-item"><img src="${p.img}"></div>`).join('');
+        document.getElementById('profile-view').style.display = 'block';
+    }
+    function closeProfile() { document.getElementById('profile-view').style.display = 'none'; }
+    function toggleFollow() {
+        const my = db.users[currentUser];
+        if(my.following.includes(viewingUser)) {
+            my.following = my.following.filter(a => a !== viewingUser);
+        } else { my.following.push(viewingUser); }
+        save(); openProfile(viewingUser);
     }
 
     // --- DM Logic ---
-    function startChat(id) { targetId = id; showPage('dm'); }
-    function sendDM() {
+    function startChat(uId) { activeChatTarget = uId; showPage('dm'); }
+    function startDMPv() { closeProfile(); startChat(viewingUser); }
+    function sendDMText() {
         const val = document.getElementById('dm-input').value;
-        if(!val || !targetId) return;
-        db.chats.push({from:'ME', to:targetId, text:val});
+        if(!val || !activeChatTarget) return;
+        db.chats.push({ from: currentUser, to: activeChatTarget, text: val, type:'text' });
         save(); document.getElementById('dm-input').value = ''; render();
     }
+    function sendDMImg(i) {
+        if(i.files[0]) {
+            const r = new FileReader(); r.onload=(e)=>{ db.chats.push({ from: currentUser, to: activeChatTarget, img: e.target.result, type:'img' }); save(); render(); }; r.readAsDataURL(i.files[0]);
+        }
+    }
 
+    // --- Setting ---
+    function updateSetImg(i) {
+        if(i.files[0]) {
+            const r = new FileReader(); r.onload=(e)=>{ db.users[currentUser].img = e.target.result; render(); }; r.readAsDataURL(i.files[0]);
+        }
+    }
+    function saveProfile() {
+        const newId = document.getElementById('set-id').value.replace('@','');
+        db.users[newId] = {
+            ...db.users[currentUser],
+            name: document.getElementById('set-name').value,
+            id: '@' + newId,
+            status: document.getElementById('set-status').value
+        };
+        save(); alert("정보가 업데이트되었습니다!"); render();
+    }
+
+    // --- Rendering ---
     function render() {
-        const my = db.profiles['ME'];
-        changeTheme(my.hue || 260);
-
+        const my = db.users[currentUser];
         // Feed
         document.getElementById('page-feed').innerHTML = db.posts.map(p => `
             <div class="post">
-                <div class="post-header" onclick="startChat('${p.author}')">
-                    <img src="${p.author === my.name ? my.img : 'https://i.pravatar.cc/100?u='+p.author}" class="p-img">
-                    <b>${p.author}</b>
+                <div class="post-hdr" onclick="openProfile('${p.author}')">
+                    <img src="${db.users[p.author]?.img}" class="p-img">
+                    <span class="p-name">${db.users[p.author]?.name}</span>
                 </div>
                 <b class="post-title">${p.title}</b>
-                <p style="font-size:0.95rem; color:#444;">${p.content}</p>
+                <p style="font-size:0.95rem; line-height:1.5;">${p.content}</p>
                 ${p.img ? `<img src="${p.img}" class="post-img">` : ''}
+                <div class="post-btns">
+                    <span onclick="addComment(${p.id})">💬 댓글 ${p.comments.length}</span>
+                    ${p.author === currentUser ? `<span onclick="deletePost(${p.id})" style="color:red">삭제</span>` : ''}
+                </div>
+                <div class="comment-area">${p.comments.map(c => `<div><b>${c.user}:</b> ${c.text}</div>`).join('')}</div>
             </div>`).join('');
 
-        // Agency
-        document.getElementById('page-agency').innerHTML = Object.keys(db.profiles).map(k => `
-            <div class="u-card" onclick="startChat('${k}')">
-                <img src="${db.profiles[k].img}" class="u-img-sq">
-                <div><b>${db.profiles[k].name}</b><br><span style="color:#888; font-size:0.8rem;">${db.profiles[k].id}</span></div>
+        // Explore
+        document.getElementById('explore-grid').innerHTML = db.posts.map(p => `
+            <div class="grid-item" onclick="openProfile('${p.author}')">
+                <img src="${p.img || 'https://via.placeholder.com/150'}">
+                <span>${p.author}</span>
+            </div>`).join('');
+
+        // User List
+        document.getElementById('page-agency').innerHTML = Object.keys(db.users).map(uId => `
+            <div class="u-card" onclick="openProfile('${uId}')">
+                <img src="${db.users[uId].img}" class="u-img-sq">
+                <div class="u-info"><b>${db.users[uId].name}</b><span>${db.users[uId].id}</span></div>
             </div>`).join('');
 
         // DM
-        if(targetId && document.getElementById('page-dm').classList.contains('active')) {
-            document.getElementById('dm-target').innerText = db.profiles[targetId].name + " 님";
-            const logs = db.chats.filter(c => (c.from === 'ME' && c.to === targetId) || (c.from === targetId && c.to === 'ME'));
-            document.getElementById('chat-box').innerHTML = logs.map(c => `<div class="msg-bubble ${c.from === 'ME' ? 'me' : 'you'}">${c.text}</div>`).join('');
+        if(activeChatTarget && document.getElementById('page-dm').classList.contains('active')) {
+            const target = db.users[activeChatTarget];
+            document.getElementById('dm-header').innerText = target.name;
+            const msgs = db.chats.filter(c => (c.from === currentUser && c.to === activeChatTarget) || (c.from === activeChatTarget && c.to === currentUser));
+            document.getElementById('chat-box').innerHTML = msgs.map(c => `
+                <div class="msg ${c.from === currentUser ? 'me' : 'you'}">
+                    ${c.from !== currentUser ? `<img src="${db.users[c.from].img}" style="width:30px; height:30px; border-radius:50%;">` : ''}
+                    <div class="bubble">
+                        ${c.type === 'text' ? c.text : `<img src="${c.img}">`}
+                    </div>
+                </div>`).join('');
             const cb = document.getElementById('chat-box'); cb.scrollTop = cb.scrollHeight;
         }
 
         // Setting Sync
-        document.getElementById('set-name').value = my.name;
-        document.getElementById('set-id').value = my.id;
-        document.getElementById('set-status').value = my.status;
-        document.getElementById('set-hue').value = my.hue;
-        document.getElementById('set-img-preview').src = my.img;
+        if(document.getElementById('page-setting').classList.contains('active')) {
+            document.getElementById('set-name').value = my.name;
+            document.getElementById('set-id').value = my.id;
+            document.getElementById('set-status').value = my.status;
+            document.getElementById('set-pre').src = my.img;
+        }
     }
-    render();
 </script>
 </body>
 </html>
