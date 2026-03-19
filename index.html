@@ -5,189 +5,200 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ARCADE SOCIAL</title>
     <style>
-        :root { --p-hue: 260; --p: hsl(var(--p-hue), 60%, 60%); --bg: #f8fafc; --white: #fff; --gray: #94a3b8; --me: hsl(var(--p-hue), 80%, 85%); --you: #ffebe6; }
+        :root { --p-hue: 260; --p: hsl(var(--p-hue), 60%, 60%); --bg: #f3f4f6; --white: #fff; --me-chat: #99caff; --you-chat: #ffc299; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: #e2e8f0; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
         #app { width: 100%; max-width: 430px; background: var(--white); display: flex; flex-direction: column; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
         
-        /* Login Overlay */
-        #login-screen { position: absolute; inset: 0; background: #fff; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
-        #login-screen input { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 12px; border: 1px solid #ddd; outline: none; }
-        #login-screen button { width: 100%; padding: 15px; background: var(--p); color: #fff; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; }
+        /* Common UI */
+        header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: #fff; border-bottom: 1px solid #eee; z-index: 100; }
+        .logo { font-weight: 900; font-size: 1.4rem; color: #4a148c; letter-spacing: -1px; }
+        .play-btn { background: linear-gradient(135deg, #4a148c, var(--p)); color: #fff; padding: 6px 18px; border-radius: 15px; font-weight: bold; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(124, 77, 255, 0.3); }
 
-        header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; background: #fff; z-index: 100; }
-        .logo { font-weight: 900; font-size: 1.4rem; color: var(--p); letter-spacing: -1px; }
-        .play-btn { background: none; border: 1px solid var(--p); color: var(--p); padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
-
-        main { flex: 1; overflow-y: auto; padding-bottom: 90px; background: var(--bg); }
-        .page { display: none; padding: 16px; min-height: 100%; }
+        main { flex: 1; overflow-y: auto; padding-bottom: 90px; background: var(--bg); position: relative; scroll-behavior: smooth; }
+        .page { display: none; padding: 15px; min-height: 100%; animation: fadeIn 0.3s ease; }
         .page.active { display: block; }
 
-        /* Feed */
-        .post { background: #fff; border-radius: 22px; padding: 18px; margin-bottom: 16px; border: 1px solid #eee; position: relative; }
-        .post-hdr { display: flex; align-items: center; margin-bottom: 10px; cursor: pointer; }
-        .p-img { width: 40px; height: 40px; border-radius: 50%; background: #eee; margin-right: 12px; object-fit: cover; }
-        .p-name { font-weight: 800; font-size: 0.95rem; }
-        .post-title { font-weight: 900; font-size: 1.2rem; display: block; margin: 8px 0; }
-        .post-img { width: 100%; border-radius: 14px; margin-top: 10px; display: block; }
-        .post-btns { display: flex; gap: 15px; margin-top: 15px; font-size: 0.85rem; color: #64748b; }
-        .comment-area { margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 10px; font-size: 0.85rem; }
+        /* Login Screen */
+        #login-overlay { position: absolute; inset: 0; background: #fff; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
+        .login-input { width: 100%; padding: 15px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #ddd; outline: none; }
 
-        /* Explore */
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
-        .grid-item { aspect-ratio: 1/1; background: #eee; overflow: hidden; position: relative; }
+        /* Feed Post Style */
+        .post { background: #fff; border-radius: 25px; padding: 18px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .post-hdr { display: flex; align-items: center; margin-bottom: 12px; cursor: pointer; }
+        .p-img-circle { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 2px solid #f1f5f9; }
+        .post-title { font-weight: 900; font-size: 1.2rem; display: block; margin: 8px 0; font-style: italic; }
+        .post-content { font-size: 0.95rem; line-height: 1.5; color: #334155; }
+        .post-img { width: 100%; border-radius: 15px; margin-top: 12px; }
+        .post-actions { display: flex; gap: 10px; margin-top: 15px; padding-top: 12px; border-top: 1px solid #f1f5f9; }
+        .action-btn { background: #f8fafc; border: none; padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; cursor: pointer; color: #64748b; }
+
+        /* Comment System */
+        .comment-section { margin-top: 15px; background: #f8fafc; border-radius: 15px; padding: 12px; font-size: 0.85rem; }
+        .cmt-item { margin-bottom: 8px; }
+        .cmt-reply { margin-left: 20px; border-left: 2px solid #ddd; padding-left: 10px; margin-top: 5px; color: #666; }
+
+        /* Explore Grid */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .grid-item { aspect-ratio: 1/1; background: #fff; border-radius: 12px; overflow: hidden; position: relative; border: 1px solid #eee; }
         .grid-item img { width: 100%; height: 100%; object-fit: cover; }
-        .grid-item span { position: absolute; bottom: 5px; left: 5px; color: #fff; font-size: 0.6rem; text-shadow: 1px 1px 2px #000; }
+        .grid-tag { position: absolute; bottom: 5px; left: 5px; background: rgba(255,255,255,0.9); padding: 2px 6px; border-radius: 6px; font-size: 10px; font-weight: 800; }
 
-        /* User List & Profile View */
-        .u-card { display: flex; align-items: center; background: #fff; padding: 16px; border-radius: 20px; margin-bottom: 10px; border: 1px solid #eee; cursor: pointer; }
-        .u-img-sq { width: 55px; height: 55px; border-radius: 16px; background: #eee; margin-right: 15px; object-fit: cover; }
-        .u-info b { display: block; font-size: 1rem; color: #1e293b; }
-        .u-info span { font-size: 0.8rem; color: var(--gray); }
+        /* User List */
+        .u-card { display: flex; align-items: center; background: #fff; padding: 15px; border-radius: 20px; margin-bottom: 12px; border: 1px solid #eee; cursor: pointer; }
+        .u-img-sq { width: 60px; height: 60px; border-radius: 18px; object-fit: cover; margin-right: 15px; }
+        .u-info b { font-size: 1.1rem; color: #1e293b; display: block; }
+        .u-info span { font-size: 0.85rem; color: #94a3b8; }
 
-        #profile-view { position: fixed; inset: 0; background: #fff; z-index: 600; display: none; padding: 20px; overflow-y: auto; }
-        .prof-hdr { text-align: center; padding: 40px 0; }
-        .prof-img { width: 100px; height: 100px; border-radius: 40px; border: 4px solid var(--p); margin-bottom: 15px; }
+        /* DM Chat (Design from Scrat 1) */
+        #chat-window { position: absolute; inset: 0; background: #fff; z-index: 500; display: none; flex-direction: column; }
+        .chat-hdr { padding: 15px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px; }
+        .chat-body { flex: 1; overflow-y: auto; padding: 20px; background: #fafafa; display: flex; flex-direction: column; gap: 15px; }
+        .msg { max-width: 80%; position: relative; }
+        .msg.me { align-self: flex-end; }
+        .msg.you { align-self: flex-start; }
+        .bubble { padding: 12px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; color: #fff; }
+        .me .bubble { background: var(--me-chat); border-bottom-right-radius: 4px; }
+        .you .bubble { background: var(--you-chat); border-bottom-left-radius: 4px; }
+        .msg-info { font-size: 10px; color: #aaa; margin-top: 4px; }
+        .reaction-txt { font-size: 11px; color: #7c4dff; font-weight: bold; margin-top: 4px; }
 
-        /* DM */
-        .chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: #fff; }
-        .msg { display: flex; gap: 10px; max-width: 85%; }
-        .msg.me { align-self: flex-end; flex-direction: row-reverse; }
-        .bubble { padding: 10px 15px; border-radius: 18px; font-size: 0.9rem; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .me .bubble { background: var(--me); border-bottom-right-radius: 2px; }
-        .you .bubble { background: var(--you); border-bottom-left-radius: 2px; }
-        .msg img { max-width: 200px; border-radius: 10px; margin-top: 5px; display: block; }
+        /* Setting Page */
+        .set-group { background: #fff; padding: 18px; border-radius: 20px; border: 1px solid #eee; margin-bottom: 15px; }
+        .set-group label { display: block; font-size: 11px; font-weight: 900; color: var(--p); margin-bottom: 8px; }
+        .set-group input, .set-group textarea { width: 100%; border: none; background: #f8fafc; padding: 12px; border-radius: 12px; outline: none; }
+        .hue-slider { width: 100%; height: 10px; -webkit-appearance: none; background: linear-gradient(to right, red, yellow, green, cyan, blue, magenta, red); border-radius: 5px; margin-top: 10px; }
 
-        /* Write & Setting */
-        #write-win { position: absolute; bottom: -100%; left: 0; width: 100%; height: 92%; background: #fff; z-index: 700; border-radius: 30px 30px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.1); transition: 0.4s; display: flex; flex-direction: column; padding: 25px; }
-        #write-win.open { bottom: 0; }
-        .set-group { background: #fff; padding: 15px; border-radius: 15px; border: 1px solid #eee; margin-bottom: 10px; }
-        .set-group label { display: block; font-size: 0.7rem; color: var(--p); font-weight: bold; margin-bottom: 5px; }
-        .set-group input, .set-group textarea { width: 100%; border: none; background: #f8fafc; padding: 10px; border-radius: 10px; outline: none; }
-
-        nav { position: absolute; bottom: 0; width: 100%; height: 85px; background: #fff; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-around; align-items: center; z-index: 150; }
-        nav button { background: none; border: none; color: #cbd5e1; cursor: pointer; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; flex: 1; }
+        /* Navigation */
+        nav { height: 85px; background: #fff; border-top: 1px solid #eee; display: flex; justify-content: space-around; align-items: center; z-index: 200; }
+        nav button { background: none; border: none; color: #cbd5e1; font-size: 0.65rem; display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; cursor: pointer; }
         nav button.active { color: var(--p); font-weight: 800; }
-        .float-btn { position: absolute; bottom: 105px; right: 25px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--p), #a78bfa); color: #fff; border: none; font-size: 30px; cursor: pointer; z-index: 200; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        nav i { font-size: 1.4rem; }
+
+        /* Profile View */
+        #profile-overlay { position: absolute; inset: 0; background: #fff; z-index: 600; display: none; padding: 20px; overflow-y: auto; }
+        .prof-top { text-align: center; padding: 40px 0 20px; }
+        .prof-img-big { width: 110px; height: 110px; border-radius: 40px; border: 4px solid var(--p); object-fit: cover; }
+        .stat-bar { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
+        .stat-item { padding: 8px 15px; background: #f1f5f9; border-radius: 12px; font-size: 0.8rem; font-weight: bold; }
+
+        /* Float Write Button */
+        .float-btn { position: absolute; bottom: 105px; right: 25px; width: 60px; height: 60px; border-radius: 50%; background: var(--p); color: #fff; border: none; font-size: 30px; cursor: pointer; z-index: 150; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
 <div id="app">
-    <div id="login-screen">
-        <h2 style="margin-bottom:30px; color:var(--p); font-weight:900;">ARCADE PLAY</h2>
-        <input type="text" id="l-id" placeholder="ID">
-        <input type="password" id="l-pw" placeholder="PW">
-        <button onclick="handleLogin()">LOGIN</button>
-        <p style="font-size:0.7rem; color:#888; margin-top:20px;">Default: ARCADE / 01024773752</p>
+    <div id="login-overlay">
+        <h1 style="color: #4a148c; font-weight: 900; margin-bottom: 30px;">ARCADE PLAY</h1>
+        <input type="text" id="l-id" class="login-input" placeholder="ID (ARCADE)">
+        <input type="password" id="l-pw" class="login-input" placeholder="PW (01024773752)">
+        <button onclick="handleLogin()" class="play-btn" style="width: 100%; padding: 15px;">LOGIN</button>
+        <p style="font-size: 12px; color: #888; margin-top: 20px;">기본 계정으로 로그인 후 계정 추가 가능</p>
     </div>
 
-    <header>
-        <div class="logo">ARCADE</div>
-        <button class="play-btn" onclick="toggleLogin(true)">PLAY</button>
-    </header>
-
-    <main id="main-port">
-        <section id="page-feed" class="page active"></section>
-        <section id="page-explore" class="page"><div class="grid" id="explore-grid"></div></section>
-        <section id="page-agency" class="page"></section>
-        <section id="page-dm" class="page" style="padding:0; display:flex; flex-direction:column;">
-            <div id="dm-header" style="padding:15px; border-bottom:1px solid #eee; font-weight:bold; text-align:center;">메시지</div>
-            <div class="chat-box" id="chat-box"></div>
-            <div style="padding:15px; border-top:1px solid #eee; display:flex; gap:10px; background:#fff;">
-                <input type="text" id="dm-input" placeholder="메시지, 링크 입력..." style="flex:1; padding:12px; border-radius:20px; border:1px solid #eee; outline:none;">
-                <button onclick="document.getElementById('dm-file').click()" style="border:none; background:none;">🖼️</button>
-                <input type="file" id="dm-file" style="display:none;" onchange="sendDMImg(this)">
-                <button onclick="sendDMText()" style="border:none; background:none; color:var(--p); font-weight:bold;">보내기</button>
-            </div>
-        </section>
-        <section id="page-setting" class="page">
-            <div style="text-align:center; margin-bottom:20px;">
-                <div style="position:relative; display:inline-block;">
-                    <img id="set-pre" src="" style="width:100px; height:100px; border-radius:40px; border:3px solid var(--p); object-fit:cover;">
-                    <button onclick="document.getElementById('set-f').click()" style="position:absolute; bottom:0; right:0; background:var(--p); color:#fff; border:none; width:30px; height:30px; border-radius:50%;">+</button>
-                </div>
-                <input type="file" id="set-f" style="display:none;" onchange="updateSetImg(this)">
-            </div>
-            <div class="set-group"><label>NAME</label><input type="text" id="set-name"></div>
-            <div class="set-group"><label>ID</label><input type="text" id="set-id"></div>
-            <div class="set-group"><label>STATUS</label><textarea id="set-status"></textarea></div>
-            <button onclick="saveProfile()" style="width:100%; padding:15px; background:var(--p); color:#fff; border:none; border-radius:15px; font-weight:bold;">저장 및 계정 추가</button>
-        </section>
-    </main>
-
-    <div id="profile-view">
-        <button onclick="closeProfile()" style="border:none; background:none; font-size:1.5rem; float:right;">×</button>
-        <div class="prof-hdr">
-            <img id="pv-img" class="prof-img">
-            <h2 id="pv-name"></h2>
-            <p id="pv-id" style="color:var(--gray);"></p>
-            <div style="margin:20px 0;">
-                <button id="pv-follow" onclick="toggleFollow()" style="padding:8px 30px; border-radius:20px; border:none; background:var(--p); color:#fff; font-weight:bold;">팔로우</button>
-                <button onclick="startDMPv()" style="padding:8px 30px; border-radius:20px; border:1px solid #ddd; background:#fff; font-weight:bold; margin-left:10px;">메시지</button>
-            </div>
+    <div id="profile-overlay">
+        <div style="display: flex; justify-content: space-between;">
+            <button onclick="closeProfile()" class="action-btn">뒤로</button>
+            <b style="font-size: 0.9rem;">PROFILE</b>
+            <div style="width: 40px;"></div>
+        </div>
+        <div class="prof-top">
+            <img id="pv-img" class="prof-img-big">
+            <h2 id="pv-name" style="margin-top: 15px; font-weight: 900;"></h2>
+            <p id="pv-id" style="color: #64748b;"></p>
+            <div class="stat-bar" id="pv-stats"></div>
+            <button id="pv-follow-btn" onclick="toggleFollow()" class="play-btn" style="padding: 10px 40px;">팔로우</button>
         </div>
         <div class="grid" id="pv-posts"></div>
     </div>
 
-    <div id="write-win">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <button onclick="toggleWrite(false)" style="border:none; background:none; font-size:1.5rem;">×</button>
-            <b>게시물 작성</b>
-            <button onclick="submitPost()" style="background:var(--p); color:#fff; border:none; padding:8px 20px; border-radius:20px; font-weight:bold;">공유</button>
+    <div id="chat-window">
+        <div class="chat-hdr">
+            <button onclick="closeChat()" style="border:none; background:none; font-size: 1.2rem;"><i class="fa-solid fa-arrow-left"></i></button>
+            <img id="chat-p-img" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;">
+            <b id="chat-p-name"></b>
         </div>
-        <div style="width:100%; height:150px; background:#f1f5f9; border-radius:15px; display:flex; align-items:center; justify-content:center; overflow:hidden; border:2px dashed #ccc;" onclick="document.getElementById('p-f').click()">
-            <img id="p-pre" style="display:none; width:100%; height:100%; object-fit:cover;">
-            <span id="p-txt">📸 사진 선택</span>
+        <div class="chat-body" id="chat-content"></div>
+        <div style="padding: 15px; display: flex; gap: 10px; border-top: 1px solid #eee;">
+            <input type="text" id="chat-input" placeholder="메시지 입력..." style="flex:1; border:none; background:#f1f5f9; padding:12px; border-radius:20px; outline:none;">
+            <button onclick="sendMsg()" style="color: var(--p); border:none; background:none; font-weight: 900;">send</button>
         </div>
-        <input type="file" id="p-f" style="display:none;" onchange="previewPostImg(this)">
-        <input type="text" id="p-title" placeholder="제목 (두껍게)" style="width:100%; padding:15px 0; border:none; border-bottom:1px solid #eee; font-size:1.2rem; font-weight:900; outline:none;">
-        <textarea id="p-content" placeholder="내용을 입력하세요..." style="width:100%; flex:1; border:none; outline:none; font-size:1rem; resize:none; margin-top:15px;"></textarea>
     </div>
 
-    <button class="float-btn" id="write-trigger" onclick="toggleWrite(true)">+</button>
+    <header>
+        <div class="logo">ARCADE</div>
+        <button class="play-btn" onclick="logout()">PLAY ✦</button>
+    </header>
+
+    <main id="main-scroll">
+        <section id="page-feed" class="page active"></section>
+        <section id="page-explore" class="page"><div class="grid" id="explore-list"></div></section>
+        <section id="page-user" class="page"></section>
+        <section id="page-dm" class="page">
+            <h3 style="margin-bottom: 20px; font-weight: 900;">Messages</h3>
+            <div id="dm-list"></div>
+        </section>
+        <section id="page-setting" class="page">
+            <div style="text-align:center; margin-bottom: 25px;">
+                <div style="position:relative; display:inline-block;" onclick="document.getElementById('set-file').click()">
+                    <img id="set-pre" style="width:100px; height:100px; border-radius:35px; border:4px solid var(--p); object-fit:cover;">
+                    <div style="position:absolute; bottom:0; right:0; background:var(--p); color:#fff; width:30px; height:30px; border-radius:50%; border:3px solid #fff; display:flex; align-items:center; justify-content:center; font-size:12px;"><i class="fa-solid fa-camera"></i></div>
+                </div>
+                <input type="file" id="set-file" style="display:none;" onchange="updatePrev(this)">
+            </div>
+            <div class="set-group"><label>NAME</label><input type="text" id="set-name"></div>
+            <div class="set-group"><label>USER ID</label><input type="text" id="set-id"></div>
+            <div class="set-group"><label>STATUS</label><textarea id="set-status" rows="2"></textarea></div>
+            <div class="set-group"><label>THEME COLOR (HUE)</label><input type="range" id="set-hue" class="hue-slider" min="0" max="360" oninput="changeHue(this.value)"></div>
+            <button onclick="saveProfile()" class="play-btn" style="width:100%; padding:18px; border-radius:20px; font-size:1rem;">저장 및 계정 추가</button>
+        </section>
+    </main>
+
+    <button class="float-btn" id="write-trigger" onclick="openWrite()">+</button>
 
     <nav>
-        <button onclick="showPage('feed')" id="nav-feed" class="active">🏛️<br>Feed</button>
-        <button onclick="showPage('explore')" id="nav-explore">✨<br>Explore</button>
-        <button onclick="showPage('agency')" id="nav-agency">🪐<br>User</button>
-        <button onclick="showPage('dm')" id="nav-dm">💬<br>DM</button>
-        <button onclick="showPage('setting')" id="nav-setting">⚙️<br>Setting</button>
+        <button onclick="showPage('feed')" id="nav-feed" class="active"><i class="fa-solid fa-house"></i>Feed</button>
+        <button onclick="showPage('explore')" id="nav-explore"><i class="fa-solid fa-wand-magic-sparkles"></i>Explore</button>
+        <button onclick="showPage('user')" id="nav-user"><i class="fa-solid fa-planet-ringed"></i>User</button>
+        <button onclick="showPage('dm')" id="nav-dm"><i class="fa-solid fa-comment-dots"></i>DM</button>
+        <button onclick="showPage('setting')" id="nav-setting"><i class="fa-solid fa-gear"></i>Setting</button>
     </nav>
 </div>
 
 <script>
     // --- Data Management ---
     let currentUser = 'ARCADE';
-    let activeChatTarget = null;
     let viewingUser = null;
-    let tempPostImg = "";
+    let activeChat = null;
 
-    const defaultDB = {
-        users: { 
-            'ARCADE': { name:'아케이드', id:'@arcade', pw:'01024773752', img:'https://i.pravatar.cc/150?u=arcade', status:'Welcome!', following:[] },
-            'GEMINI': { name:'제미나이', id:'@ai_gem', pw:'1234', img:'https://i.pravatar.cc/150?u=ai', status:'Hello World', following:[] }
+    const db = JSON.parse(localStorage.getItem('arcade_v20')) || {
+        users: {
+            'ARCADE': { name:'아케이드', id:'@arcade', pw:'01024773752', img:'https://i.pravatar.cc/150?u=a1', status:'Welcome!', following:[], hue:260 },
+            'ROSSY': { name:'ROSSY', id:'@rozzy.buzy', pw:'1234', img:'https://i.pravatar.cc/150?u=r1', status:'Stay busy!', following:[], hue:280 },
+            'NANA': { name:'NANA', id:'@bananas', pw:'1234', img:'https://i.pravatar.cc/150?u=n1', status:'Fresh!', following:[], hue:40 }
         },
         posts: [
-            { id: 1, author: 'GEMINI', title: 'ARCADE SOCIAL OPEN!', content: '멋진 소셜 공간이 탄생했습니다.', img: 'https://picsum.photos/400/300', comments: [] }
+            { id: 1, author: 'ROSSY', title: 'HELLO WORLD', content: '아케이드 소셜 오픈을 축하합니다!', img: 'https://picsum.photos/400/500?random=1', comments: [] },
+            { id: 2, author: 'NANA', title: 'BANANA', content: '모두 따뜻한 하루 보내요🍷', img: 'https://picsum.photos/400/500?random=2', comments: [] }
         ],
         chats: []
     };
+    function save() { localStorage.setItem('arcade_v20', JSON.stringify(db)); }
 
-    let db = JSON.parse(localStorage.getItem('arcade_v10')) || defaultDB;
-    function save() { localStorage.setItem('arcade_v10', JSON.stringify(db)); }
-
-    // --- Auth ---
+    // --- Logic ---
     function handleLogin() {
         const id = document.getElementById('l-id').value;
         const pw = document.getElementById('l-pw').value;
         if(db.users[id] && db.users[id].pw === pw) {
-            currentUser = id; toggleLogin(false); render();
-        } else { alert("계정 정보가 틀립니다."); }
+            currentUser = id; document.getElementById('login-overlay').style.display='none'; render();
+        } else { alert("정보가 틀립니다."); }
     }
-    function toggleLogin(show) { document.getElementById('login-screen').style.display = show ? 'flex' : 'none'; }
+    function logout() { document.getElementById('login-overlay').style.display='flex'; }
 
-    // --- Page Logic ---
     function showPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
@@ -197,71 +208,81 @@
         render();
     }
 
-    // --- Post Logic ---
-    function toggleWrite(o) { document.getElementById('write-win').classList.toggle('open', o); }
-    function previewPostImg(i) {
-        if(i.files[0]) {
-            const r = new FileReader(); r.onload=(e)=>{ tempPostImg=e.target.result; document.getElementById('p-pre').src=tempPostImg; document.getElementById('p-pre').style.display='block'; document.getElementById('p-txt').style.display='none'; }; r.readAsDataURL(i.files[0]);
-        }
-    }
-    function submitPost() {
-        const t = document.getElementById('p-title').value;
-        const c = document.getElementById('p-content').value;
-        if(!t) return;
-        db.posts.unshift({ id: Date.now(), author: currentUser, title: t, content: c, img: tempPostImg, comments: [] });
-        save(); toggleWrite(false); render();
-    }
-    function deletePost(id) { db.posts = db.posts.filter(p => p.id !== id); save(); render(); }
-    function addComment(pId) {
-        const txt = prompt("댓글을 입력하세요");
-        if(txt) {
-            const post = db.posts.find(p => p.id === pId);
-            post.comments.push({ user: currentUser, text: txt });
-            save(); render();
-        }
-    }
-
-    // --- Profile & Follow ---
     function openProfile(uId) {
         viewingUser = uId;
         const u = db.users[uId];
         document.getElementById('pv-img').src = u.img;
         document.getElementById('pv-name').innerText = u.name;
         document.getElementById('pv-id').innerText = u.id;
-        document.getElementById('pv-follow').innerText = db.users[currentUser].following.includes(uId) ? "팔로잉" : "팔로우";
+        document.getElementById('pv-follow-btn').innerText = db.users[currentUser].following.includes(uId) ? "팔로잉" : "팔로우";
         
         const myPosts = db.posts.filter(p => p.author === uId);
+        document.getElementById('pv-stats').innerHTML = `
+            <div class="stat-item">${myPosts.length} 게시물</div>
+            <div class="stat-item">19 팔로워</div>
+            <div class="stat-item">${u.following.length} 팔로잉</div>
+        `;
         document.getElementById('pv-posts').innerHTML = myPosts.map(p => `<div class="grid-item"><img src="${p.img}"></div>`).join('');
-        document.getElementById('profile-view').style.display = 'block';
+        document.getElementById('profile-overlay').style.display = 'block';
     }
-    function closeProfile() { document.getElementById('profile-view').style.display = 'none'; }
+    function closeProfile() { document.getElementById('profile-overlay').style.display = 'none'; }
     function toggleFollow() {
         const my = db.users[currentUser];
-        if(my.following.includes(viewingUser)) {
-            my.following = my.following.filter(a => a !== viewingUser);
-        } else { my.following.push(viewingUser); }
+        if(my.following.includes(viewingUser)) my.following = my.following.filter(f => f !== viewingUser);
+        else my.following.push(viewingUser);
         save(); openProfile(viewingUser);
     }
 
-    // --- DM Logic ---
-    function startChat(uId) { activeChatTarget = uId; showPage('dm'); }
-    function startDMPv() { closeProfile(); startChat(viewingUser); }
-    function sendDMText() {
-        const val = document.getElementById('dm-input').value;
-        if(!val || !activeChatTarget) return;
-        db.chats.push({ from: currentUser, to: activeChatTarget, text: val, type:'text' });
-        save(); document.getElementById('dm-input').value = ''; render();
+    function openChat(uId) {
+        activeChat = uId;
+        document.getElementById('chat-p-img').src = db.users[uId].img;
+        document.getElementById('chat-p-name').innerText = db.users[uId].name;
+        document.getElementById('chat-window').style.display = 'flex';
+        renderChat();
     }
-    function sendDMImg(i) {
-        if(i.files[0]) {
-            const r = new FileReader(); r.onload=(e)=>{ db.chats.push({ from: currentUser, to: activeChatTarget, img: e.target.result, type:'img' }); save(); render(); }; r.readAsDataURL(i.files[0]);
+    function closeChat() { document.getElementById('chat-window').style.display = 'none'; }
+    function sendMsg() {
+        const val = document.getElementById('chat-input').value;
+        if(!val) return;
+        db.chats.push({ from: currentUser, to: activeChat, text: val, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
+        document.getElementById('chat-input').value = '';
+        save(); renderChat();
+    }
+    function renderChat() {
+        const msgs = db.chats.filter(c => (c.from===currentUser && c.to===activeChat) || (c.from===activeChat && c.to===currentUser));
+        document.getElementById('chat-content').innerHTML = msgs.map(c => `
+            <div class="msg ${c.from===currentUser?'me':'you'}">
+                <div class="bubble">${c.text}</div>
+                <div class="msg-info">${c.time}</div>
+            </div>
+        `).join('');
+        const b = document.getElementById('chat-content'); b.scrollTop = b.scrollHeight;
+    }
+
+    function openWrite() {
+        const t = prompt("제목을 입력하세요");
+        const c = prompt("내용을 입력하세요");
+        const i = prompt("이미지 URL (직접 업로드는 Setting 참조)");
+        if(t && c) {
+            db.posts.unshift({ id: Date.now(), author: currentUser, title: t, content: c, img: i || 'https://picsum.photos/400/500', comments: [] });
+            save(); render();
         }
     }
 
-    // --- Setting ---
-    function updateSetImg(i) {
-        if(i.files[0]) {
-            const r = new FileReader(); r.onload=(e)=>{ db.users[currentUser].img = e.target.result; render(); }; r.readAsDataURL(i.files[0]);
+    function deletePost(id) { if(confirm("삭제할까요?")) { db.posts = db.posts.filter(p => p.id !== id); save(); render(); } }
+    function addComment(pId) {
+        const txt = prompt("댓글 내용");
+        if(txt) {
+            db.posts.find(p => p.id === pId).comments.push({ user: currentUser, text: txt, replies: [] });
+            save(); render();
+        }
+    }
+
+    function changeHue(v) { document.documentElement.style.setProperty('--p-hue', v); }
+    function updatePrev(input) {
+        if(input.files[0]) {
+            const r = new FileReader(); r.onload = (e) => document.getElementById('set-pre').src = e.target.result;
+            r.readAsDataURL(input.files[0]);
         }
     }
     function saveProfile() {
@@ -269,68 +290,65 @@
         db.users[newId] = {
             ...db.users[currentUser],
             name: document.getElementById('set-name').value,
-            id: '@' + newId,
-            status: document.getElementById('set-status').value
+            id: '@'+newId,
+            status: document.getElementById('set-status').value,
+            img: document.getElementById('set-pre').src,
+            hue: document.getElementById('set-hue').value
         };
-        save(); alert("정보가 업데이트되었습니다!"); render();
+        currentUser = newId; save(); render(); alert("계정이 업데이트/추가되었습니다!");
     }
 
-    // --- Rendering ---
     function render() {
-        const my = db.users[currentUser];
+        const me = db.users[currentUser];
+        changeHue(me.hue);
         // Feed
         document.getElementById('page-feed').innerHTML = db.posts.map(p => `
             <div class="post">
                 <div class="post-hdr" onclick="openProfile('${p.author}')">
-                    <img src="${db.users[p.author]?.img}" class="p-img">
-                    <span class="p-name">${db.users[p.author]?.name}</span>
+                    <img src="${db.users[p.author].img}" class="p-img-circle">
+                    <div><b>${db.users[p.author].name}</b><br><span style="font-size:11px; color:#94a3b8;">${db.users[p.author].id}</span></div>
                 </div>
                 <b class="post-title">${p.title}</b>
-                <p style="font-size:0.95rem; line-height:1.5;">${p.content}</p>
+                <p class="post-content">${p.content}</p>
                 ${p.img ? `<img src="${p.img}" class="post-img">` : ''}
-                <div class="post-btns">
-                    <span onclick="addComment(${p.id})">💬 댓글 ${p.comments.length}</span>
-                    ${p.author === currentUser ? `<span onclick="deletePost(${p.id})" style="color:red">삭제</span>` : ''}
+                <div class="post-actions">
+                    <button class="action-btn" onclick="addComment(${p.id})">💬 댓글 ${p.comments.length}</button>
+                    ${p.author === currentUser ? `<button class="action-btn" onclick="deletePost(${p.id})" style="color:red">삭제</button>` : ''}
                 </div>
-                <div class="comment-area">${p.comments.map(c => `<div><b>${c.user}:</b> ${c.text}</div>`).join('')}</div>
-            </div>`).join('');
+                ${p.comments.length > 0 ? `<div class="comment-section">${p.comments.map(c => `<div class="cmt-item"><b>${c.user}:</b> ${c.text}</div>`).join('')}</div>` : ''}
+            </div>
+        `).join('');
 
         // Explore
-        document.getElementById('explore-grid').innerHTML = db.posts.map(p => `
+        document.getElementById('explore-list').innerHTML = db.posts.map(p => `
             <div class="grid-item" onclick="openProfile('${p.author}')">
-                <img src="${p.img || 'https://via.placeholder.com/150'}">
-                <span>${p.author}</span>
-            </div>`).join('');
+                <img src="${p.img}">
+                <div class="grid-tag">${p.author}</div>
+            </div>
+        `).join('');
 
-        // User List
-        document.getElementById('page-agency').innerHTML = Object.keys(db.users).map(uId => `
-            <div class="u-card" onclick="openProfile('${uId}')">
-                <img src="${db.users[uId].img}" class="u-img-sq">
-                <div class="u-info"><b>${db.users[uId].name}</b><span>${db.users[uId].id}</span></div>
-            </div>`).join('');
+        // User
+        document.getElementById('page-user').innerHTML = Object.keys(db.users).map(u => `
+            <div class="u-card" onclick="openProfile('${u}')">
+                <img src="${db.users[u].img}" class="u-img-sq">
+                <div class="u-info"><b>${db.users[u].name}</b><span>${db.users[u].id}</span></div>
+            </div>
+        `).join('');
 
-        // DM
-        if(activeChatTarget && document.getElementById('page-dm').classList.contains('active')) {
-            const target = db.users[activeChatTarget];
-            document.getElementById('dm-header').innerText = target.name;
-            const msgs = db.chats.filter(c => (c.from === currentUser && c.to === activeChatTarget) || (c.from === activeChatTarget && c.to === currentUser));
-            document.getElementById('chat-box').innerHTML = msgs.map(c => `
-                <div class="msg ${c.from === currentUser ? 'me' : 'you'}">
-                    ${c.from !== currentUser ? `<img src="${db.users[c.from].img}" style="width:30px; height:30px; border-radius:50%;">` : ''}
-                    <div class="bubble">
-                        ${c.type === 'text' ? c.text : `<img src="${c.img}">`}
-                    </div>
-                </div>`).join('');
-            const cb = document.getElementById('chat-box'); cb.scrollTop = cb.scrollHeight;
-        }
+        // DM List
+        document.getElementById('dm-list').innerHTML = Object.keys(db.users).filter(u => u !== currentUser).map(u => `
+            <div class="u-card" onclick="openChat('${u}')">
+                <img src="${db.users[u].img}" class="u-img-sq" style="border-radius:50%">
+                <div class="u-info"><b>${db.users[u].name}</b><span>대화하기</span></div>
+            </div>
+        `).join('');
 
         // Setting Sync
-        if(document.getElementById('page-setting').classList.contains('active')) {
-            document.getElementById('set-name').value = my.name;
-            document.getElementById('set-id').value = my.id;
-            document.getElementById('set-status').value = my.status;
-            document.getElementById('set-pre').src = my.img;
-        }
+        document.getElementById('set-name').value = me.name;
+        document.getElementById('set-id').value = me.id;
+        document.getElementById('set-status').value = me.status;
+        document.getElementById('set-pre').src = me.img;
+        document.getElementById('set-hue').value = me.hue;
     }
 </script>
 </body>
