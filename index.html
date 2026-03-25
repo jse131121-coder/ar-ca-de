@@ -10,7 +10,6 @@
         body { background: #e2e8f0; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
         #app { width: 100%; max-width: 430px; background: var(--white); display: flex; flex-direction: column; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
         
-        /* Header & Login */
         header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: #fff; border-bottom: 1px solid #eee; z-index: 100; }
         .logo { font-weight: 900; font-size: 1.4rem; color: var(--p); letter-spacing: -1px; }
         .play-btn { background: var(--p); color: #fff; padding: 6px 18px; border-radius: 15px; font-weight: bold; border: none; cursor: pointer; font-size: 0.8rem; }
@@ -22,7 +21,6 @@
         .page { display: none; padding: 15px; min-height: 100%; animation: fadeIn 0.3s ease; }
         .page.active { display: block; }
 
-        /* Feed Style */
         .post { background: #fff; border-radius: 25px; padding: 18px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .post-hdr { display: flex; align-items: center; margin-bottom: 12px; cursor: pointer; }
         .p-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 2px solid #eee; }
@@ -30,24 +28,20 @@
         .post-img { width: 100%; border-radius: 15px; margin-top: 10px; cursor: pointer; }
         .post-btns { display: flex; gap: 15px; margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 10px; font-size: 0.85rem; color: #64748b; }
 
-        /* Comments */
         .cmt-box { background: #f8fafc; border-radius: 15px; padding: 10px; margin-top: 10px; font-size: 0.85rem; }
         .cmt-item { margin-bottom: 5px; }
         .cmt-reply { margin-left: 20px; padding-left: 10px; border-left: 2px solid #ddd; color: #777; margin-top: 3px; }
 
-        /* Explore Grid */
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
         .grid-item { aspect-ratio: 1/1; background: #fff; overflow: hidden; position: relative; border-radius: 8px; border: 1px solid #eee; }
         .grid-item img { width: 100%; height: 100%; object-fit: cover; }
         .grid-item span { position: absolute; bottom: 5px; left: 5px; font-size: 10px; background: rgba(255,255,255,0.8); padding: 2px 5px; border-radius: 5px; font-weight: 800; }
 
-        /* User List */
         .u-card { display: flex; align-items: center; background: #fff; padding: 15px; border-radius: 20px; margin-bottom: 10px; border: 1px solid #eee; cursor: pointer; }
         .u-img-sq { width: 60px; height: 60px; border-radius: 18px; object-fit: cover; margin-right: 15px; background: #eee; }
         .u-info b { font-size: 1.1rem; color: #1e293b; display: block; }
         .u-info span { font-size: 0.85rem; color: #94a3b8; }
 
-        /* DM Chat */
         #chat-view { position: absolute; inset: 0; background: #fff; z-index: 500; display: none; flex-direction: column; }
         .chat-body { flex: 1; overflow-y: auto; padding: 20px; background: #fafafa; display: flex; flex-direction: column; gap: 12px; }
         .msg { max-width: 80%; padding: 12px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; position: relative; }
@@ -55,12 +49,10 @@
         .msg.you { align-self: flex-start; background: var(--you); border-bottom-left-radius: 4px; }
         .msg img { max-width: 100%; border-radius: 10px; margin-top: 5px; }
 
-        /* Profile View Overlay */
         #profile-view { position: absolute; inset: 0; background: #fff; z-index: 600; display: none; padding: 20px; overflow-y: auto; }
         .prof-hdr { text-align: center; padding: 40px 0 20px; }
         .prof-img-big { width: 110px; height: 110px; border-radius: 40px; border: 4px solid var(--p); object-fit: cover; }
 
-        /* Setting Tab inside Page */
         .set-tab-nav { display: flex; background: #eee; border-radius: 12px; padding: 4px; margin-bottom: 20px; }
         .set-tab-nav button { flex: 1; border: none; padding: 10px; border-radius: 10px; font-size: 0.8rem; font-weight: 800; cursor: pointer; background: none; color: #888; }
         .set-tab-nav button.active { background: #fff; color: var(--p); }
@@ -68,11 +60,9 @@
         .set-group label { display: block; font-size: 11px; font-weight: 900; color: var(--p); margin-bottom: 6px; }
         .set-group input, .set-group textarea { width: 100%; border: none; background: #f8fafc; padding: 10px; border-radius: 10px; outline: none; }
 
-        /* Write Window */
         #write-win { position: absolute; bottom: -100%; left: 0; width: 100%; height: 90%; background: #fff; z-index: 700; border-radius: 30px 30px 0 0; transition: 0.4s; padding: 25px; display: flex; flex-direction: column; box-shadow: 0 -10px 30px rgba(0,0,0,0.1); }
         #write-win.open { bottom: 0; }
 
-        /* Nav */
         nav { height: 85px; background: #fff; border-top: 1px solid #eee; display: flex; justify-content: space-around; align-items: center; z-index: 150; }
         nav button { background: none; border: none; color: #cbd5e1; font-size: 0.65rem; display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; cursor: pointer; }
         nav button.active { color: var(--p); font-weight: 800; }
@@ -183,6 +173,11 @@
 </div>
 
 <script>
+    // --- GitHub 연동 설정 (꼭 본인걸로 채우세요!) ---
+    const GITHUB_TOKEN = "여기에_토큰_넣기"; 
+    const REPO_OWNER = "본인_아이디";
+    const REPO_NAME = "본인_저장소명";
+
     let curUser = 'ARCADE';
     let editPostId = null;
     let viewingUId = null;
@@ -200,6 +195,24 @@
         chats: []
     };
     function save() { localStorage.setItem('arc_v50', JSON.stringify(db)); }
+
+    // --- GitHub Server 함수 ---
+    async function saveToGithub(title, content, img) {
+        try {
+            const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: `[POST] ${title}`,
+                    body: `**Author:** ${curUser}\n\n${content}\n\n![Image](${img})`
+                })
+            });
+            return response.ok;
+        } catch(e) { return false; }
+    }
 
     // --- System ---
     function login() {
@@ -249,147 +262,35 @@
             }; r.readAsDataURL(i.files[0]);
         }
     }
-    function submitPost() {
+
+    async function submitPost() {
         const t = document.getElementById('post-title').value;
         const c = document.getElementById('post-content').value;
         if(!t || !c) return alert("내용을 입력하세요.");
-        if(editPostId) {
-            const p = db.posts.find(x => x.id === editPostId);
-            p.title = t; p.content = c; if(tempPostImg) p.img = tempPostImg;
+        
+        // GitHub 전송 (기존 기능에 추가됨)
+        const isOk = await saveToGithub(t, c, tempPostImg);
+
+        if(isOk) {
+            if(editPostId) {
+                const p = db.posts.find(x => x.id === editPostId);
+                p.title = t; p.content = c; if(tempPostImg) p.img = tempPostImg;
+            } else {
+                db.posts.unshift({ id: Date.now(), author: curUser, title: t, content: c, img: tempPostImg || 'https://picsum.photos/400/300', comments: [] });
+            }
+            tempPostImg = ""; save(); closeWrite(); render();
+            alert("공유 완료!");
         } else {
-            db.posts.unshift({ id: Date.now(), author: curUser, title: t, content: c, img: tempPostImg || 'https://picsum.photos/400/300', comments: [] });
+            alert("서버 전송 실패.. 토큰 설정을 확인하세요.");
         }
-        tempPostImg = ""; save(); closeWrite(); render();
     }
+
     function deletePost(id) { if(confirm("삭제할까요?")) { db.posts = db.posts.filter(p => p.id !== id); save(); render(); } }
+    
     function addCmt(pId) {
         const txt = prompt("댓글을 입력하세요");
         if(txt) { db.posts.find(p => p.id === pId).comments.push({ user: curUser, text: txt, replies: [] }); save(); render(); }
     }
     function addReply(pId, cIdx) {
         const txt = prompt("대댓글을 입력하세요");
-        if(txt) { db.posts.find(p => p.id === pId).comments[cIdx].replies.push({ user: curUser, text: txt }); save(); render(); }
-    }
-
-    // --- Profile & Follow ---
-    function openProfile(uId) {
-        viewingUId = uId; const u = db.users[uId];
-        document.getElementById('pv-img').src = u.img;
-        document.getElementById('pv-name').innerText = u.name;
-        document.getElementById('pv-id').innerText = u.id;
-        document.getElementById('pv-follow').innerText = db.users[curUser].following.includes(uId) ? "팔로잉" : "팔로우";
-        const myPosts = db.posts.filter(p => p.author === uId);
-        document.getElementById('pv-posts').innerHTML = myPosts.map(p => `<div class="grid-item" onclick="closeProfile(); location.href='#post-${p.id}'"><img src="${p.img}"></div>`).join('');
-        document.getElementById('profile-view').style.display = 'block';
-    }
-    function closeProfile() { document.getElementById('profile-view').style.display = 'none'; }
-    function toggleFollow() {
-        const my = db.users[curUser];
-        if(my.following.includes(viewingUId)) my.following = my.following.filter(f => f !== viewingUId);
-        else my.following.push(viewingUId);
-        save(); openProfile(viewingUId);
-    }
-
-    // --- DM ---
-    function startDMChat() { closeProfile(); openChat(viewingUId); }
-    function openChat(uId) {
-        activeChatUId = uId;
-        document.getElementById('chat-p-img').src = db.users[uId].img;
-        document.getElementById('chat-p-name').innerText = db.users[uId].name;
-        document.getElementById('chat-view').style.display = 'flex';
-        renderChat();
-    }
-    function closeChat() { document.getElementById('chat-view').style.display = 'none'; }
-    function sendChatTxt() {
-        const v = document.getElementById('chat-in').value; if(!v) return;
-        db.chats.push({ from: curUser, to: activeChatUId, type: 'txt', val: v });
-        document.getElementById('chat-in').value = ""; save(); renderChat();
-    }
-    function sendChatImg(i) {
-        if(i.files[0]) {
-            const r = new FileReader(); r.onload=(e)=>{ db.chats.push({ from: curUser, to: activeChatUId, type: 'img', val: e.target.result }); save(); renderChat(); }; r.readAsDataURL(i.files[0]);
-        }
-    }
-    function renderChat() {
-        const msgs = db.chats.filter(c => (c.from===curUser && c.to===activeChatUId) || (c.from===activeChatUId && c.to===curUser));
-        document.getElementById('chat-list').innerHTML = msgs.map(m => `
-            <div class="msg ${m.from===curUser?'me':'you'}">
-                ${m.type==='txt' ? m.val : `<img src="${m.val}">`}
-            </div>`).join('');
-        const b = document.getElementById('chat-list'); b.scrollTop = b.scrollHeight;
-    }
-
-    // --- Setting ---
-    function toggleSetTab(m) {
-        document.getElementById('box-my').style.display = m==='my'?'block':'none';
-        document.getElementById('box-add').style.display = m==='add'?'block':'none';
-        document.getElementById('tab-my').className = m==='my'?'active':'';
-        document.getElementById('tab-add').className = m==='add'?'active':'';
-    }
-    function prevImg(i, t) {
-        if(i.files[0]) { const r = new FileReader(); r.onload=(e)=>document.getElementById(t).src=e.target.result; r.readAsDataURL(i.files[0]); }
-    }
-    function saveMyInfo() {
-        const u = db.users[curUser];
-        u.name = document.getElementById('set-my-name').value;
-        u.status = document.getElementById('set-my-status').value;
-        u.img = document.getElementById('set-my-pre').src;
-        u.hue = document.getElementById('set-my-hue').value;
-        save(); alert("저장 완료!"); render();
-    }
-    function addNewAcc() {
-        const id = document.getElementById('set-add-id').value;
-        const pw = document.getElementById('set-add-pw').value;
-        const nm = document.getElementById('set-add-name').value;
-        if(!id || !pw || !nm) return alert("모두 입력하세요.");
-        db.users[id] = { name: nm, id: '@'+id, pw: pw, img: 'https://i.pravatar.cc/150', status: 'Hello!', hue: 200, following: [] };
-        save(); alert("새 계정 생성! 로그인 화면에서 접속하세요."); location.reload();
-    }
-
-    // --- Core Render ---
-    function render() {
-        const me = db.users[curUser]; applyHue(me.hue);
-        // Feed
-        document.getElementById('page-feed').innerHTML = db.posts.map(p => `
-            <div class="post" id="post-${p.id}">
-                <div class="post-hdr" onclick="openProfile('${p.author}')">
-                    <img src="${db.users[p.author].img}" class="p-img">
-                    <div><b>${db.users[p.author].name}</b><br><span style="font-size:11px; color:#94a3b8;">${db.users[p.author].id}</span></div>
-                </div>
-                <b class="post-title">${p.title}</b>
-                <p style="font-size:0.95rem; line-height:1.4;">${p.content}</p>
-                <img src="${p.img}" class="post-img" onclick="openProfile('${p.author}')">
-                <div class="post-btns">
-                    <span onclick="addCmt(${p.id})">💬 댓글 ${p.comments.length}</span>
-                    ${p.author===curUser ? `<span onclick="openWrite(${p.id})">✏️ 수정</span><span onclick="deletePost(${p.id})" style="color:red;">🗑️ 삭제</span>` : ''}
-                </div>
-                ${p.comments.map((c, i) => `
-                    <div class="cmt-box">
-                        <div class="cmt-item"><b>${c.user}:</b> ${c.text} <span onclick="addReply(${p.id}, ${i})" style="font-size:10px; color:var(--p); margin-left:10px;">답글</span></div>
-                        ${c.replies.map(r => `<div class="cmt-reply"><b>${r.user}:</b> ${r.text}</div>`).join('')}
-                    </div>
-                `).join('')}
-            </div>`).join('');
-        // Explore
-        document.getElementById('explore-list').innerHTML = db.posts.map(p => `<div class="grid-item" onclick="openProfile('${p.author}')"><img src="${p.img}"><span>${p.author}</span></div>`).join('');
-        // User
-        document.getElementById('page-user').innerHTML = Object.keys(db.users).map(uId => `
-            <div class="u-card" onclick="openProfile('${uId}')">
-                <img src="${db.users[uId].img}" class="u-img-sq">
-                <div class="u-info"><b>${db.users[uId].name}</b><span>${db.users[uId].id}</span></div>
-            </div>`).join('');
-        // DM List
-        document.getElementById('dm-rooms').innerHTML = Object.keys(db.users).filter(u=>u!==curUser).map(uId => `
-            <div class="u-card" onclick="openChat('${uId}')">
-                <img src="${db.users[uId].img}" class="u-img-sq" style="border-radius:50%">
-                <div class="u-info"><b>${db.users[uId].name}</b><span>최근 메시지 없음</span></div>
-            </div>`).join('');
-        // Setting Sync
-        document.getElementById('set-my-name').value = me.name;
-        document.getElementById('set-my-status').value = me.status;
-        document.getElementById('set-my-pre').src = me.img;
-        document.getElementById('set-my-hue').value = me.hue;
-    }
-</script>
-</body>
-</html>
+        if(txt) { db.posts.find(p => p.id === pId).comments[cIdx].replies.push({ user: curUser, text: txt }); save(); render
